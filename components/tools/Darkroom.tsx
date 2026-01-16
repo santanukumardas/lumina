@@ -1,23 +1,10 @@
 
 import React, { useState } from 'react';
-
-// Pool of images from other parts of the app for variety
-const DARKROOM_IMAGES = [
-    'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800', // Architecture (Original)
-    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=800', // Landscape
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800', // Portrait Eyes
-    'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=800', // Urban Lines
-    'https://images.unsplash.com/photo-1542259685-6113b28b7762?q=80&w=800', // Street Car
-    'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=800', // Winter Portrait
-    'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=800', // Golden Hour
-    'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800', // Neon
-    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=800', // Portrait Light
-    'https://images.unsplash.com/photo-1516912481808-3406841bd33c?q=80&w=800'  // Night Bokeh
-];
+import { ASSETS } from '../../data/assets';
 
 const Darkroom: React.FC = () => {
-    // Select a random image on mount
-    const [sourceImage] = useState(() => DARKROOM_IMAGES[Math.floor(Math.random() * DARKROOM_IMAGES.length)]);
+    // Select a random image on mount from centralized assets
+    const [sourceImage] = useState(() => ASSETS.DARKROOM[Math.floor(Math.random() * ASSETS.DARKROOM.length)]);
 
     const [exposure, setExposure] = useState(0);
     const [contrast, setContrast] = useState(1);

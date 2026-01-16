@@ -1,5 +1,4 @@
 
-
 export type LessonId = 
   // Exposure
   | 'aperture' | 'shutter' | 'iso' | 'histogram' | 'metering' | 'focal-length' | 'sensor-size' | 'focus-peaking' | 'dynamic-range'
@@ -11,7 +10,7 @@ export type LessonId =
   | 'light-panel' | 'tone-curve' | 'split-toning' | 'hsl-slider' | 'clarity-sharpen' | 'effects-panel'
   // Nature Gallery
   | 'gal-nat-land-1' | 'gal-nat-land-2' | 'gal-nat-land-3' | 'gal-nat-land-4'
-  | 'gal-nat-wild-2' | 'gal-nat-wild-3' | 'gal-nat-wild-4'
+  | 'gal-nat-wild-2' | 'gal-nat-wild-3'
   | 'gal-nat-macro-1' 
   | 'gal-nat-forest-1' | 'gal-nat-astro-1'
   // Human Gallery
