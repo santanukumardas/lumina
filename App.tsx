@@ -1,13 +1,19 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Category, Lesson, Mission } from './types';
-import { GALLERY_COLLECTIONS } from './data/content';
+import { GALLERY_COLLECTIONS, LEARNING_MODULES, TOPICS, APP_TOOLS } from './data/content';
 import Header from './components/layout/Header';
 import GlobalSettings from './components/features/GlobalSettings';
 import MainView from './components/layout/MainView';
 
+export type SearchResults = {
+    lessons: (Lesson & { categoryId: string, type: 'lesson' | 'gallery' })[];
+    concepts: string[];
+    tools: typeof APP_TOOLS;
+};
+
 export default function App() {
-  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction'>('home');
+  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'search' | 'bookmarks'>('home');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -18,14 +24,44 @@ export default function App() {
       return saved ? JSON.parse(saved) : null;
   });
 
+  // Persistent Progress & Bookmarks
+  const [completedLessons, setCompletedLessons] = useState<string[]>(() => {
+      const saved = localStorage.getItem('lumina_completed_lessons');
+      return saved ? JSON.parse(saved) : [];
+  });
+  const [bookmarkedLessons, setBookmarkedLessons] = useState<string[]>(() => {
+      const saved = localStorage.getItem('lumina_bookmarked_lessons');
+      return saved ? JSON.parse(saved) : [];
+  });
+
+  // Search State
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResults>({ lessons: [], concepts: [], tools: [] });
+  // Specific concept to open if navigated via search
+  const [initialConcept, setInitialConcept] = useState<string | null>(null);
+
   // Global state for post-production image
   const [postProdImage, setPostProdImage] = useState<string | null>(null);
 
   const scrollPositions = useRef<Record<string, number>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+      localStorage.setItem('lumina_completed_lessons', JSON.stringify(completedLessons));
+  }, [completedLessons]);
+
+  useEffect(() => {
+      localStorage.setItem('lumina_bookmarked_lessons', JSON.stringify(bookmarkedLessons));
+  }, [bookmarkedLessons]);
+
   // Navigation Handler
   const navigateTo = (mode: typeof viewMode, restore: boolean = false) => {
+    // Clear search if navigating away
+    if (mode !== 'search') {
+        setSearchQuery('');
+        setInitialConcept(null);
+    }
+
     scrollPositions.current[viewMode] = window.scrollY;
     setViewMode(mode);
     setTimeout(() => {
@@ -44,10 +80,71 @@ export default function App() {
     navigateTo('lesson');
   };
 
+  const handleConceptSelect = (topic: string) => {
+      setInitialConcept(topic);
+      navigateTo('concepts');
+  };
+
+  const handleSearch = (query: string) => {
+      setSearchQuery(query);
+      if (query.length > 1) {
+          const lowerQ = query.toLowerCase();
+          
+          // Search Lessons & Galleries
+          const matchedLessons: SearchResults['lessons'] = [];
+          [...LEARNING_MODULES, ...GALLERY_COLLECTIONS].forEach(cat => {
+              cat.lessons.forEach(l => {
+                  if (l.title.toLowerCase().includes(lowerQ) || l.description.toLowerCase().includes(lowerQ)) {
+                      matchedLessons.push({ ...l, categoryId: cat.id, type: cat.id.startsWith('gal') ? 'gallery' : 'lesson' });
+                  }
+              });
+          });
+
+          // Search Concepts
+          const matchedConcepts = TOPICS.filter(t => t.toLowerCase().includes(lowerQ));
+
+          // Search Tools
+          const matchedTools = APP_TOOLS.filter(t => t.title.toLowerCase().includes(lowerQ) || t.description.toLowerCase().includes(lowerQ));
+
+          setSearchResults({ lessons: matchedLessons, concepts: matchedConcepts, tools: matchedTools });
+          setViewMode('search');
+      } else if (query.length === 0 && viewMode === 'search') {
+          navigateTo('home', true);
+      }
+  };
+
+  const toggleComplete = (lessonId: string) => {
+      setCompletedLessons(prev => 
+          prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
+      );
+  };
+
+  const toggleBookmark = (lessonId: string) => {
+      setBookmarkedLessons(prev => 
+          prev.includes(lessonId) ? prev.filter(id => id !== lessonId) : [...prev, lessonId]
+      );
+  };
+
+  const handleResetData = () => {
+      setCompletedLessons([]);
+      setBookmarkedLessons([]);
+      setActiveMission(null);
+      localStorage.removeItem('lumina_completed_lessons');
+      localStorage.removeItem('lumina_bookmarked_lessons');
+      localStorage.removeItem('lumina_active_mission');
+      // Note: usage logs and API key are preserved intentionally in this reset, 
+      // but you can clear them if needed.
+  };
+
   const handleBack = () => {
     if (viewMode === 'lesson') {
       setActiveLesson(null);
-      navigateTo('category', true);
+      if (activeCategory) {
+          navigateTo('category', true);
+      } else {
+          // Fallback if accessed via search/bookmarks
+          navigateTo('home', true); 
+      }
     } else if (viewMode === 'category') {
       if (GALLERY_COLLECTIONS.find(c => c.id === activeCategory?.id)) {
           setActiveCategory(null);
@@ -78,14 +175,12 @@ export default function App() {
       if (viewMode === 'critique') return activeMission ? 'Mission Verification' : 'AI Photo Critic';
       if (viewMode === 'missions') return 'Creative Missions';
       if (viewMode === 'concepts') return 'Concept Library';
-      if (viewMode === 'darkroom') return 'The Darkroom';
-      if (viewMode === 'chroma-lab') return 'Chroma Lab';
-      if (viewMode === 'studio-planner') return 'Studio Planner';
-      if (viewMode === 'dof-calc') return 'DoF Visualizer';
-      if (viewMode === 'nd-sim') return 'ND Filter Lab';
-      if (viewMode === 'rgb-curves') return 'RGB Curve Sim';
-      if (viewMode === 'zone-system') return 'Zone System Map';
-      if (viewMode === 'diffraction') return 'Diffraction Calc';
+      if (viewMode === 'search') return 'Search Results';
+      if (viewMode === 'bookmarks') return 'Saved Lessons';
+      
+      const tool = APP_TOOLS.find(t => t.id === viewMode);
+      if (tool) return tool.title;
+
       return activeCategory?.title || 'Lumina';
   };
 
@@ -96,9 +191,16 @@ export default function App() {
         onBack={handleBack} 
         title={getPageTitle()} 
         onOpenSettings={() => setShowSettings(true)}
+        searchQuery={searchQuery}
+        onSearch={handleSearch}
+        onOpenBookmarks={() => navigateTo('bookmarks')}
       />
 
-      <GlobalSettings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <GlobalSettings 
+        isOpen={showSettings} 
+        onClose={() => setShowSettings(false)} 
+        onResetData={handleResetData}
+      />
 
       {/* Optimized padding for mobile: px-4 on mobile, md:px-4. py-4 mobile, py-8 desktop */}
       <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 pb-32 md:pb-24">
@@ -117,6 +219,14 @@ export default function App() {
             onMissionDiscard={() => { setActiveMission(null); localStorage.removeItem('lumina_active_mission'); }}
             onScroll={scroll}
             scrollContainerRef={scrollContainerRef}
+            // New Props
+            searchResults={searchResults}
+            initialConcept={initialConcept}
+            handleConceptSelect={handleConceptSelect}
+            completedLessons={completedLessons}
+            bookmarkedLessons={bookmarkedLessons}
+            toggleComplete={toggleComplete}
+            toggleBookmark={toggleBookmark}
          />
       </main>
     </div>

@@ -306,6 +306,437 @@ export const GALLERY_COLLECTIONS: Category[] = [
   }
 ];
 
+export const APP_TOOLS = [
+    { id: 'darkroom', title: 'Darkroom', description: 'Color Grading & Exposure' },
+    { id: 'chroma-lab', title: 'Chroma Lab', description: 'Palette Generator' },
+    { id: 'studio-planner', title: 'Studio Planner', description: 'Lighting Diagram Builder' },
+    { id: 'dof-calc', title: 'DoF Visualizer', description: 'Depth of Field Calculator' },
+    { id: 'nd-sim', title: 'ND Filter Lab', description: 'Long Exposure Simulator' },
+    { id: 'rgb-curves', title: 'RGB Curves', description: 'Advanced Color Grading' },
+    { id: 'zone-system', title: 'Zone System', description: 'Exposure Zone Mapper' },
+    { id: 'diffraction', title: 'Diffraction Calc', description: 'Sharpness Limit Calculator' },
+];
+
+export const TOPICS = [
+    "Airy Disk", "Aperture", "Astrophotography", "Blue Hour", "Bokeh", 
+    "Chromatic Aberration", "Clarity", "Color Grading", "Color Harmony", 
+    "Color Temperature", "Compression (Lens)", "Contrast", "Crop Factor", 
+    "Depth of Field", "Diffraction", "Dutch Angle", "Dynamic Range", 
+    "Exposure Triangle", "False Color", "Fill Light", "Film Grain", 
+    "Flash Sync", "Flat Lay", "Focal Length", "Focus Peaking", "Framing", 
+    "Gobos", "Golden Hour", "Golden Ratio", "High Key", "Histogram", 
+    "HSL", "Hyperfocal Distance", "Inverse Square Law", "ISO", "Key Light", 
+    "Keystoning", "Leading Lines", "Long Exposure", "Low Key", 
+    "Macro Photography", "Metering Modes", "Monochrome", "Motion Blur", 
+    "Negative Space", "ND Filters", "Panning", "Pixel Pitch", 
+    "Rembrandt Lighting", "Rim Light", "RGB Curves", "Rule of Thirds", 
+    "Sensor Size", "Shadows & Highlights", "Sharpening", "Shutter Speed", 
+    "Silhouette", "Split Toning", "Symmetry", "Three-Point Lighting", 
+    "Tone Curve", "Vignette", "Visual Weight", "White Balance", "Zone System"
+];
+
+interface ConceptData {
+    definition: string;
+    howItWorks: string;
+    creativeUse: string;
+    commonMistakes?: string;
+    tool: string;
+    toolTip?: string;
+}
+
+export const OFFLINE_KNOWLEDGE: Record<string, ConceptData> = {
+    "Aperture": { 
+        definition: "The adjustable opening in the lens diaphragm through which light travels.", 
+        howItWorks: "Measured in f-stops. Lower numbers (f/1.4) mean a larger hole; higher numbers (f/16) mean a smaller hole.",
+        creativeUse: "Use wide apertures (f/1.8) for soft backgrounds (bokeh). Use narrow apertures (f/11) for landscapes.",
+        tool: "Aperture Simulator", toolTip: "Toggle 'Portrait' mode to see bokeh effects."
+    },
+    "Shutter Speed": { 
+        definition: "The duration the camera sensor is exposed to light.", 
+        howItWorks: "Fast speeds (1/1000s) freeze time. Slow speeds (1s) create motion blur.",
+        creativeUse: "Use slow speeds to smooth out water or capture light trails.",
+        tool: "Shutter Speed Simulator", toolTip: "Try the 'Water Flow' scene."
+    },
+    "ISO": { 
+        definition: "The sensor's sensitivity to light.", 
+        howItWorks: "Higher ISO amplifies the signal but introduces digital noise (grain).",
+        creativeUse: "Essential for shooting handheld in low light environments.",
+        tool: "ISO Simulator", toolTip: "Zoom in to see the noise pattern."
+    },
+    "Depth of Field": { 
+        definition: "The range of distance that appears acceptably sharp.", 
+        howItWorks: "Affected by Aperture (wider=less), Focal Length (longer=less), and Distance (closer=less).",
+        creativeUse: "Isolate a subject from a busy street using shallow depth of field.",
+        tool: "DoF Visualizer", toolTip: "Move the subject out of the green zone."
+    },
+    "Focal Length": { 
+        definition: "The distance from the lens optical center to the sensor, determining zoom.", 
+        howItWorks: "Short (Wide) expands the view. Long (Telephoto) brings things closer.",
+        creativeUse: "Telephoto lenses flatter portraits; Wide lenses exaggerate landscape scale.",
+        tool: "Focal Length Simulator", toolTip: "Observe background compression."
+    },
+    "Compression (Lens)": {
+        definition: "The optical effect where background elements appear larger and closer to the subject.",
+        howItWorks: "Achieved by standing further away and using a long focal length lens.",
+        creativeUse: "Make a distant mountain look massive behind your subject.",
+        tool: "Focal Length Simulator", toolTip: "Set to 200mm to see the background enlarge."
+    },
+    "Histogram": { 
+        definition: "A graph showing the distribution of light tones in an image.", 
+        howItWorks: "Left is black, right is white. Ideally, data should not touch the walls (clipping).",
+        creativeUse: "Use it to expose 'to the right' (ETTR) for maximum quality without clipping.",
+        tool: "Histogram Simulator", toolTip: "Watch the mountain move as you expose."
+    },
+    "Exposure Triangle": {
+        definition: "The balance between Aperture, Shutter Speed, and ISO.",
+        howItWorks: "Changing one setting requires adjusting another to maintain the same brightness.",
+        creativeUse: "Trade ISO for Shutter Speed to get a cleaner shot if you have a tripod.",
+        tool: "Exposure Simulators", toolTip: "Check Aperture, Shutter, and ISO tools."
+    },
+    "Metering Modes": { 
+        definition: "How the camera measures light to determine exposure.", 
+        howItWorks: "Matrix reads the whole scene. Spot reads only the center point.",
+        creativeUse: "Use Spot Metering for backlit subjects to prevent silhouettes.",
+        tool: "Metering Simulator", toolTip: "Switch to Spot Mode."
+    },
+    "Rule of Thirds": { 
+        definition: "Dividing the frame into a 3x3 grid to place subjects off-center.", 
+        howItWorks: "Placing points of interest on intersections creates visual tension and energy.",
+        creativeUse: "Place the subject's eyes on the top-right intersection.",
+        tool: "Composition Simulators", toolTip: "Toggle the grid overlay."
+    },
+    "Golden Ratio": { 
+        definition: "A ratio of 1:1.618 found in nature that is aesthetically pleasing.", 
+        howItWorks: "Visualized as a spiral narrowing down to a focal point.",
+        creativeUse: "Organize complex scenes so the eye flows naturally to the subject.",
+        tool: "Composition Simulators", toolTip: "Compare Phi Grid vs Rule of Thirds."
+    },
+    "Color Temperature": { 
+        definition: "The warmth or coolness of white light.", 
+        howItWorks: "Measured in Kelvin. 2000K is warm (orange), 8000K is cool (blue).",
+        creativeUse: "Mis-match WB for creative effect (e.g., cooling down a day shot).",
+        tool: "Color Temp Simulator", toolTip: "Slide to 3000K for Tungsten look."
+    },
+    "White Balance": {
+        definition: "The process of removing color casts so white objects appear white.",
+        howItWorks: "It counteracts the color temperature of the light source.",
+        creativeUse: "Use 'Shade' WB at sunset to make the golden tones even stronger.",
+        tool: "Color Temp Simulator", toolTip: "Adjust Kelvin to neutralize the cast."
+    },
+    "Three-Point Lighting": { 
+        definition: "Standard lighting setup: Key, Fill, and Back light.", 
+        howItWorks: "Key illuminates, Fill softens shadows, Back separates from background.",
+        creativeUse: "Remove the Fill light for a dramatic, moody 'Rembrandt' look.",
+        tool: "Three-Point Lighting Sim", toolTip: "Toggle lights on/off."
+    },
+    "Key Light": {
+        definition: "The primary light source in a scene.",
+        howItWorks: "It creates the main shadows and defines the form of the subject.",
+        creativeUse: "Positioning it high and to the side creates classic portrait modeling.",
+        tool: "Three-Point Lighting Sim", toolTip: "Turn off Fill and Back to see just the Key."
+    },
+    "Fill Light": {
+        definition: "Secondary light used to reduce the contrast of shadows.",
+        howItWorks: "Usually placed opposite the Key light and is less intense.",
+        creativeUse: "Use a reflector instead of a light for a natural fill outdoors.",
+        tool: "Three-Point Lighting Sim", toolTip: "Toggle the Fill light."
+    },
+    "Rim Light": {
+        definition: "Light placed behind the subject to illuminate the edges.",
+        howItWorks: "It creates a glowing outline that separates the subject from a dark background.",
+        creativeUse: "Essential for dark hair against a dark background.",
+        tool: "Three-Point Lighting Sim", toolTip: "Toggle the Back Light."
+    },
+    "Rembrandt Lighting": {
+        definition: "A lighting technique characterized by a triangle of light on the shadowed cheek.",
+        howItWorks: "Created by placing the key light at a 45-degree angle and high up.",
+        creativeUse: "Creates a classic, painterly, and dramatic portrait.",
+        tool: "Three-Point Lighting Sim", toolTip: "Use Key Light only and look for shadow shape."
+    },
+    "Low Key": {
+        definition: "A style of photography that uses predominantly dark tones and high contrast.",
+        howItWorks: "Uses minimal lighting and focuses on form and outline.",
+        creativeUse: "Great for dramatic portraits or mystery.",
+        tool: "Three-Point Lighting Sim", toolTip: "Disable Fill Light for high contrast."
+    },
+    "High Key": {
+        definition: "A style of photography that uses predominantly bright tones and low contrast.",
+        howItWorks: "Uses lots of fill light to eliminate shadows.",
+        creativeUse: "Great for beauty, fashion, and upbeat product photography.",
+        tool: "Three-Point Lighting Sim", toolTip: "Use all lights at high power."
+    },
+    "Zone System": { 
+        definition: "A technique to determine optimal film exposure and development.", 
+        howItWorks: "Divides brightness into 11 zones from 0 (Black) to X (White). Zone V is Middle Grey.",
+        creativeUse: "Place skin tones in Zone VI to ensure they are bright enough.",
+        tool: "Zone System Mapper", toolTip: "Use False Color mode."
+    },
+    "False Color": {
+        definition: "A visualization tool that maps luminance values to specific colors.",
+        howItWorks: "Allows you to see exposure levels of different areas instantly.",
+        creativeUse: "Quickly check if skin tones are properly exposed (often pink/green).",
+        tool: "Zone System Mapper", toolTip: "Enable False Color toggle."
+    },
+    "Diffraction": { 
+        definition: "Loss of sharpness caused by light bending around aperture blades at high f-stops.", 
+        howItWorks: "Occurs when the aperture hole is physically very small (e.g., f/22).",
+        creativeUse: "Avoid f/22 unless you need extreme depth of field; f/8-f/11 is usually sharper.",
+        tool: "Diffraction Calculator", toolTip: "Observe the Airy Disk size."
+    },
+    "Airy Disk": {
+        definition: "The pattern of light focused by a lens, limited by diffraction.",
+        howItWorks: "As aperture shrinks, the disk grows. If it's larger than a pixel, the image softens.",
+        creativeUse: "Understanding this helps you find your lens's 'sweet spot'.",
+        tool: "Diffraction Calculator", toolTip: "See pixel pitch vs disk size."
+    },
+    "RGB Curves": { 
+        definition: "Adjusting brightness/contrast for individual color channels.", 
+        howItWorks: "Altering the Red curve affects Cyan/Red balance.",
+        creativeUse: "Lift Blue shadows and lower Blue highlights for a 'Cross Process' look.",
+        tool: "RGB Curve Sim", toolTip: "Manipulate individual channels."
+    },
+    "Contrast": {
+        definition: "The difference between the light and dark areas of an image.",
+        howItWorks: "High contrast has stark blacks and whites; low contrast is gray and flat.",
+        creativeUse: "Use high contrast for bold street photography.",
+        tool: "Tone Curve Simulator", toolTip: "Create an S-Curve."
+    },
+    "ND Filters": { 
+        definition: "Neutral Density filters act as sunglasses for the lens.", 
+        howItWorks: "They reduce incoming light without changing color.",
+        creativeUse: "Allows long exposures (blurring water) even in bright daylight.",
+        tool: "ND Filter Lab", toolTip: "Select 'Waterfall' scene."
+    },
+    "Long Exposure": {
+        definition: "Using a slow shutter speed to capture the passage of time.",
+        howItWorks: "Requires a tripod. Moving objects become blurred; static objects stay sharp.",
+        creativeUse: "Turning choppy water into mist or car lights into trails.",
+        tool: "ND Filter Lab", toolTip: "Increase stop density."
+    },
+    "Focus Peaking": { 
+        definition: "A live focus assist tool.", 
+        howItWorks: "Highlights high-contrast edges in a bright color (red/yellow).",
+        creativeUse: "Essential for manual focus lenses or macro work.",
+        tool: "Focus Peaking Sim", toolTip: "Adjust focus distance."
+    },
+    "Inverse Square Law": { 
+        definition: "Light intensity drops off rapidly as distance increases.", 
+        howItWorks: "Double distance = 1/4 light intensity.",
+        creativeUse: "Place light close for rapid fall-off (moody). Place far for even light.",
+        tool: "Inverse Square Law Sim", toolTip: "Move light slider."
+    },
+    "Dynamic Range": { 
+        definition: "The range from darkest shadow to brightest highlight a camera can capture.", 
+        howItWorks: "If the scene range exceeds sensor range, clipping occurs.",
+        creativeUse: "Shoot RAW to preserve more dynamic range.",
+        tool: "Dynamic Range Sim", toolTip: "Compare JPEG vs RAW."
+    },
+    "Shadows & Highlights": {
+        definition: "The darkest and brightest parts of an image.",
+        howItWorks: "Digital sensors struggle more with highlights; film struggles with shadows.",
+        creativeUse: "Recovering shadows in post can reveal hidden details.",
+        tool: "Light Panel Simulator", toolTip: "Adjust shadow/highlight sliders."
+    },
+    "Sensor Size": { 
+        definition: "The physical dimensions of the image sensor.", 
+        howItWorks: "Larger sensors capture more light and allow shallower depth of field.",
+        creativeUse: "Full Frame for low light/portraits. Crop sensor for wildlife reach.",
+        tool: "Sensor Size Simulator", toolTip: "Switch between FF and Micro 4/3."
+    },
+    "Crop Factor": { 
+        definition: "The magnification effect of using a smaller sensor.", 
+        howItWorks: "A 50mm lens on an APS-C (1.5x) sensor behaves like a 75mm lens.",
+        creativeUse: "Advantageous for bird photography as it extends lens reach.",
+        tool: "Sensor Size Simulator", toolTip: "Observe the framing change."
+    },
+    "Pixel Pitch": {
+        definition: "The distance between the center of one pixel to the next on a sensor.",
+        howItWorks: "Larger pixels gather more light (less noise) but lower resolution.",
+        creativeUse: "Important for understanding diffraction limits and low light performance.",
+        tool: "Diffraction Calculator", toolTip: "See micron value change with MP."
+    },
+    "Keystoning": { 
+        definition: "Parallel lines appearing to converge due to camera angle.", 
+        howItWorks: "Often happens when tilting the camera up at a building.",
+        creativeUse: "Correct it to make architecture look majestic and upright.",
+        tool: "Keystoning Simulator", toolTip: "Apply perspective correction."
+    },
+    "Dutch Angle": { 
+        definition: "Tilting the horizon line of the camera.", 
+        howItWorks: "Breaks the standard horizontal alignment.",
+        creativeUse: "Creates a sense of unease, tension, or dynamic action.",
+        tool: "Dutch Angle Simulator", toolTip: "Tilt the slider."
+    },
+    "Hyperfocal Distance": { 
+        definition: "The focus point that provides the maximum depth of field.", 
+        howItWorks: "Everything from half this distance to infinity will be sharp.",
+        creativeUse: "Crucial for landscape photography to keep foreground and mountains sharp.",
+        tool: "DoF Visualizer", toolTip: "Look for the yellow marker."
+    },
+    "Tone Curve": { 
+        definition: "A graph controlling the brightness of input tones vs output tones.", 
+        howItWorks: "Dragging the line up brightens; down darkens.",
+        creativeUse: "Create an 'S-Curve' for punchy contrast.",
+        tool: "Tone Curve Simulator", toolTip: "Manipulate the curve points."
+    },
+    "Split Toning": { 
+        definition: "Color grading highlights and shadows separately.", 
+        howItWorks: "Adds color tint to specific luminance ranges.",
+        creativeUse: "Teal shadows and Orange highlights is a blockbuster movie look.",
+        tool: "Split Toning Simulator", toolTip: "Adjust hue sliders."
+    },
+    "Color Grading": {
+        definition: "The process of altering and enhancing the color of an image.",
+        howItWorks: "Can be corrective or artistic (stylized).",
+        creativeUse: "Give an image a 'vintage' feel by warming highlights and lifting blacks.",
+        tool: "Darkroom", toolTip: "Match the target grade."
+    },
+    "Chromatic Aberration": { 
+        definition: "Color fringing along high-contrast edges.", 
+        howItWorks: "Lens fails to focus all colors to the same point.",
+        creativeUse: "Usually a defect to remove, but sometimes added for retro glitch aesthetics.",
+        tool: "Lens Correction (General)", toolTip: "Concept explained in optics."
+    },
+    "Bokeh": { 
+        definition: "The aesthetic quality of out-of-focus blur.", 
+        howItWorks: "Created by aperture blades and lens design.",
+        creativeUse: "Turn streetlights into beautiful glowing orbs behind a portrait.",
+        tool: "Aperture Simulator", toolTip: "Use 'Night' scene."
+    },
+    "Gobos": { 
+        definition: "Objects placed in front of light to cast shadows.", 
+        howItWorks: "Go-Between Object. Can be blinds, leaves, or cutouts.",
+        creativeUse: "Add visual interest to a plain wall behind a subject.",
+        tool: "Gobos Simulator", toolTip: "Select 'Blinds' pattern."
+    },
+    "Golden Hour": { 
+        definition: "First/last hour of sunlight.", 
+        howItWorks: "Sun is low, creating soft, warm, diffused light.",
+        creativeUse: "The 'magic' time for outdoor portraits.",
+        tool: "Golden Hour Simulator", toolTip: "Set time to late afternoon."
+    },
+    "Blue Hour": { 
+        definition: "Twilight period before sunrise or after sunset.", 
+        howItWorks: "Sky is deep blue, city lights are warm.",
+        creativeUse: "Perfect for cityscapes to balance artificial light with natural sky.",
+        tool: "Golden Hour Simulator", toolTip: "Set time to dusk."
+    },
+    "Flash Sync": { 
+        definition: "Timing of the flash firing relative to shutter.", 
+        howItWorks: "Rear Curtain fires at the end of exposure.",
+        creativeUse: "Rear Curtain creates light trails *behind* a moving car.",
+        tool: "Flash Sync Simulator", toolTip: "Switch to Rear Curtain."
+    },
+    "Film Grain": { 
+        definition: "Texture caused by silver halide particles in film.", 
+        howItWorks: "Digital noise is different (undesirable), but grain is often aesthetic.",
+        creativeUse: "Add grain to monochrome photos for a gritty, journalistic look.",
+        tool: "Effects Panel Sim", toolTip: "Increase grain slider."
+    },
+    "HSL": { 
+        definition: "Hue, Saturation, Luminance.", 
+        howItWorks: "Allows adjustment of specific color ranges independently.",
+        creativeUse: "Desaturate only the oranges to fix skin tones, or shift blue sky to teal.",
+        tool: "HSL Slider Simulator", toolTip: "Adjust color channels."
+    },
+    "Color Harmony": {
+        definition: "Pleasing arrangement of colors (e.g., complementary, analogous).",
+        howItWorks: "Based on the color wheel relationships.",
+        creativeUse: "Use a palette generator to plan wardrobe and location colors.",
+        tool: "Chroma Lab", toolTip: "Extract palette from image."
+    },
+    "Symmetry": { 
+        definition: "One side of the image mirrors the other.", 
+        howItWorks: "Creates balance and formality.",
+        creativeUse: "Reflections in water are the perfect opportunity for symmetry.",
+        tool: "Composition Simulators", toolTip: "Align with the center guide."
+    },
+    "Visual Weight": { 
+        definition: "The power of an element to draw the eye.", 
+        howItWorks: "Contrast, size, faces, and text have high visual weight.",
+        creativeUse: "Balance a large, light object with a small, dark object.",
+        tool: "Balance Simulator", toolTip: "See the seesaw effect."
+    },
+    "Negative Space": {
+        definition: "The empty area surrounding the main subject.",
+        howItWorks: "It provides breathing room and emphasizes the subject.",
+        creativeUse: "Use a vast sky to make a lone figure look isolated.",
+        tool: "Negative Space Simulator", toolTip: "Zoom out to increase space."
+    },
+    "Framing": {
+        definition: "Using scene elements to create a frame within the photo.",
+        howItWorks: "Shooting through windows, doors, or branches.",
+        creativeUse: "Adds depth and directs the eye to the subject.",
+        tool: "Framing Simulator", toolTip: "Add a natural frame."
+    },
+    "Clarity": {
+        definition: "Contrast applied specifically to mid-tones.",
+        howItWorks: "Enhances texture and 'crunch' without affecting overall exposure much.",
+        creativeUse: "Great for architectural details or gritty portraits; avoid on smooth skin.",
+        tool: "Clarity & Sharpen Sim", toolTip: "Increase Clarity slider."
+    },
+    "Sharpening": {
+        definition: "Enhancing the contrast of edges.",
+        howItWorks: "Makes boundaries between objects distinct.",
+        creativeUse: "Essential for digital images to counter sensor anti-aliasing filters.",
+        tool: "Clarity & Sharpen Sim", toolTip: "Increase Sharpen slider."
+    },
+    "Vignette": {
+        definition: "Darkening of image corners.",
+        howItWorks: "Can happen naturally with lenses or added in post.",
+        creativeUse: "Draws attention to the center of the frame.",
+        tool: "Effects Panel Sim", toolTip: "Apply vignette."
+    },
+    "Silhouette": {
+        definition: "Subject appears dark against a bright background.",
+        howItWorks: "Expose for the bright background, leaving the subject underexposed.",
+        creativeUse: "Simplifies the subject into a graphic shape.",
+        tool: "Exposure Simulators", toolTip: "Use Spot Metering on the sky."
+    },
+    "Motion Blur": {
+        definition: "Streaking of moving objects due to slow shutter speed.",
+        howItWorks: "The sensor records the object's path during exposure.",
+        creativeUse: "Convey speed in car photography or smooth flow in waterfalls.",
+        tool: "Shutter Speed Simulator", toolTip: "Use slow shutter speed."
+    },
+    "Panning": {
+        definition: "Following a moving subject with the camera while shooting.",
+        howItWorks: "Keeps the subject relatively sharp while blurring the background.",
+        creativeUse: "Classic technique for race cars or cyclists.",
+        tool: "Shutter Speed Simulator", toolTip: "Select 'Action Pan' mode."
+    },
+    "Macro Photography": {
+        definition: "Close-up photography of small subjects.",
+        howItWorks: "Requires specialized lenses to achieve 1:1 magnification.",
+        creativeUse: "Reveal textures invisible to the naked eye.",
+        tool: "Focus Peaking Sim", toolTip: "Use Peaking to find thin focus plane."
+    },
+    "Astrophotography": {
+        definition: "Photography of astronomical objects and the night sky.",
+        howItWorks: "Requires long exposures, high ISO, and wide apertures.",
+        creativeUse: "Capture the Milky Way.",
+        tool: "Exposure Simulators", toolTip: "Experiment with high ISO/slow shutter."
+    },
+    "Monochrome": {
+        definition: "Image in a single color, usually black and white.",
+        howItWorks: "Removes color distraction, focusing on light, texture, and form.",
+        creativeUse: "Timeless look for portraits and street photography.",
+        tool: "Split Toning Simulator", toolTip: "View base grayscale image."
+    },
+    "Flat Lay": {
+        definition: "Shooting items from directly above (90 degrees).",
+        howItWorks: "Eliminates depth perspective, focusing on arrangement.",
+        creativeUse: "Popular for food and product photography.",
+        tool: "Composition Simulators", toolTip: "Imagine grid lines for arrangement."
+    },
+    "Leading Lines": {
+        definition: "Lines in the image that guide the eye to the subject.",
+        howItWorks: "Roads, fences, or shadows act as arrows.",
+        creativeUse: "Create strong depth and visual flow.",
+        tool: "Composition Simulators", toolTip: "Use perspective lines."
+    }
+};
+
 export interface ShowcaseData {
     img: string;
     why: string;

@@ -2,8 +2,9 @@
 import React from 'react';
 import { Category, Lesson, Mission } from '../../types';
 import { Visualizer } from '../Simulations';
-import { LEARNING_MODULES, GALLERY_COLLECTIONS } from '../../data/content';
+import { LEARNING_MODULES, GALLERY_COLLECTIONS, APP_TOOLS } from '../../data/content';
 import { ASSETS } from '../../data/assets';
+import { SearchResults } from '../../App';
 
 // Feature Components
 import Darkroom from '../tools/Darkroom';
@@ -22,7 +23,8 @@ import {
   Camera, Frame, Sun, Image as ImageIcon, Mountain, Users, Building, 
   Moon, ChevronLeft, ChevronRight, BookOpen, Info, ArrowRight, Play, 
   ScanLine, Sliders, Eye, Aperture, Maximize2, Palette, PenTool, 
-  Calculator, Timer, Target, Sparkles, Activity, Layers, Grid, GraduationCap, Monitor 
+  Calculator, Timer, Target, Sparkles, Activity, Layers, Grid, GraduationCap, 
+  Monitor, Search, Bookmark, CheckCircle, Lightbulb
 } from 'lucide-react';
 
 const IconMap = {
@@ -37,7 +39,7 @@ const AIBadge = () => (
     </div>
 );
 
-type ViewMode = 'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction';
+type ViewMode = 'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'search' | 'bookmarks';
 
 interface MainViewProps {
     viewMode: ViewMode;
@@ -55,6 +57,15 @@ interface MainViewProps {
     onMissionDiscard: () => void;
     onScroll: (direction: 'left' | 'right') => void;
     scrollContainerRef: React.RefObject<HTMLDivElement>;
+    // Search & Data
+    searchResults: SearchResults;
+    initialConcept: string | null;
+    handleConceptSelect: (topic: string) => void;
+    // Progress & Bookmarks
+    completedLessons: string[];
+    bookmarkedLessons: string[];
+    toggleComplete: (id: string) => void;
+    toggleBookmark: (id: string) => void;
 }
 
 const MainView: React.FC<MainViewProps> = (props) => {
@@ -63,7 +74,9 @@ const MainView: React.FC<MainViewProps> = (props) => {
         postProdImage, setPostProdImage,
         onNavigate, onCategorySelect, onLessonSelect, 
         onMissionVerify, onMissionSave, onMissionDiscard,
-        onScroll, scrollContainerRef 
+        onScroll, scrollContainerRef,
+        searchResults, initialConcept, handleConceptSelect,
+        completedLessons, bookmarkedLessons, toggleComplete, toggleBookmark
     } = props;
 
     // Derived Navigation for Lessons
@@ -75,6 +88,15 @@ const MainView: React.FC<MainViewProps> = (props) => {
         currentIndex = activeCategory.lessons.findIndex(l => l.id === activeLesson.id);
         if (currentIndex > 0) prevLesson = activeCategory.lessons[currentIndex - 1];
         if (currentIndex < activeCategory.lessons.length - 1) nextLesson = activeCategory.lessons[currentIndex + 1];
+    } else if (activeLesson) {
+        // Fallback if accessing lesson directly (via search/bookmarks)
+        // Find which category it belongs to
+        const foundCat = [...LEARNING_MODULES, ...GALLERY_COLLECTIONS].find(c => c.lessons.some(l => l.id === activeLesson.id));
+        if (foundCat) {
+             const idx = foundCat.lessons.findIndex(l => l.id === activeLesson.id);
+             if (idx > 0) prevLesson = foundCat.lessons[idx - 1];
+             if (idx < foundCat.lessons.length - 1) nextLesson = foundCat.lessons[idx + 1];
+        }
     }
 
     switch (viewMode) {
@@ -99,6 +121,11 @@ const MainView: React.FC<MainViewProps> = (props) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-12">
                         {LEARNING_MODULES.map((cat) => {
                             const Icon = IconMap[cat.iconName];
+                            // Calculate Category Progress
+                            const total = cat.lessons.length;
+                            const completed = cat.lessons.filter(l => completedLessons.includes(l.id)).length;
+                            const progress = (completed / total) * 100;
+
                             return (
                                 <button
                                     key={cat.id}
@@ -113,9 +140,21 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-50 mix-blend-multiply transition-opacity`} />
                                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
+                                    {/* Progress Bar (Mini) */}
+                                    {completed > 0 && (
+                                        <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>
+                                    )}
+
                                     <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
-                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                            <Icon size={20} className="text-white md:w-6 md:h-6" />
+                                        <div className="flex justify-between items-start">
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                                <Icon size={20} className="text-white md:w-6 md:h-6" />
+                                            </div>
+                                            {completed > 0 && (
+                                                <div className="px-2 py-1 rounded-md bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                                                    {Math.round(progress)}% <CheckCircle size={10}/>
+                                                </div>
+                                            )}
                                         </div>
                                         <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">{cat.title}</h3>
                                         <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
@@ -137,7 +176,6 @@ const MainView: React.FC<MainViewProps> = (props) => {
                             className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
                             style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
-                            <AIBadge />
                             <div
                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
                                 style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.concepts})` }}
@@ -151,7 +189,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                 </div>
                                 <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">Concepts & Techniques</h3>
                                 <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
-                                    AI-Powered Explanations
+                                    Comprehensive Knowledge Base
                                 </p>
                                 <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                     20+ Topics <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
@@ -307,7 +345,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                 </div>
             );
         case 'missions': return <MissionGenerator onVerify={onMissionVerify} existingMission={activeMission} onSaveMission={onMissionSave} onDiscardMission={onMissionDiscard} />;
-        case 'concepts': return <ConceptLibrary />;
+        case 'concepts': return <ConceptLibrary initialTopic={initialConcept} />;
         case 'darkroom': return <Darkroom />;
         case 'chroma-lab': return <ChromaLab />;
         case 'studio-planner': return <StudioPlanner />;
@@ -328,6 +366,127 @@ const MainView: React.FC<MainViewProps> = (props) => {
                 />
             </div>
         );
+        case 'search':
+            return (
+                <div className="animate-slide-up space-y-8">
+                    {/* LESSONS & GALLERIES */}
+                    {(searchResults.lessons.length > 0) && (
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2"><BookOpen size={18} className="text-zinc-400"/> Learning Modules</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {searchResults.lessons.map(lesson => (
+                                    <button
+                                        key={lesson.id}
+                                        onClick={() => onLessonSelect(lesson)}
+                                        className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-left hover:border-zinc-600 transition-all group"
+                                    >
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded ${lesson.type === 'gallery' ? 'bg-purple-900/30 text-purple-400' : 'bg-blue-900/30 text-blue-400'}`}>
+                                                {lesson.type}
+                                            </span>
+                                            <ArrowRight size={16} className="text-zinc-600 group-hover:text-white transition-colors" />
+                                        </div>
+                                        <h4 className="text-white font-bold mb-1">{lesson.title}</h4>
+                                        <p className="text-xs text-zinc-400 line-clamp-2">{lesson.description}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* CONCEPTS */}
+                    {(searchResults.concepts.length > 0) && (
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2"><GraduationCap size={18} className="text-zinc-400"/> Concepts</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                {searchResults.concepts.map(topic => (
+                                    <button
+                                        key={topic}
+                                        onClick={() => handleConceptSelect(topic)}
+                                        className="bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 hover:border-emerald-500/50 p-3 rounded-lg text-sm text-zinc-300 hover:text-white transition-all text-left flex items-center justify-between group"
+                                    >
+                                        {topic}
+                                        <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0" />
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TOOLS */}
+                    {(searchResults.tools.length > 0) && (
+                        <div>
+                            <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2"><Sliders size={18} className="text-zinc-400"/> Tools</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                {searchResults.tools.map(tool => (
+                                    <button
+                                        key={tool.id}
+                                        onClick={() => onNavigate(tool.id as any)}
+                                        className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl text-left hover:border-zinc-600 transition-all group"
+                                    >
+                                        <h4 className="text-white font-bold mb-1 group-hover:text-emerald-400 transition-colors">{tool.title}</h4>
+                                        <p className="text-xs text-zinc-400">{tool.description}</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {searchResults.lessons.length === 0 && searchResults.concepts.length === 0 && searchResults.tools.length === 0 && (
+                        <div className="text-center py-20">
+                            <Search size={48} className="mx-auto text-zinc-800 mb-4" />
+                            <h3 className="text-zinc-500 font-bold">No results found</h3>
+                            <p className="text-zinc-600 text-sm mt-2">Try searching for "Aperture", "Contrast", or "Portrait"</p>
+                        </div>
+                    )}
+                </div>
+            );
+        case 'bookmarks':
+            // Flatten all lessons to search by ID
+            const allLessons = [...LEARNING_MODULES, ...GALLERY_COLLECTIONS].flatMap(c => c.lessons);
+            const savedItems = allLessons.filter(l => bookmarkedLessons.includes(l.id));
+
+            return (
+                <div className="animate-slide-up">
+                    <div className="mb-8 flex items-center gap-3">
+                        <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 text-indigo-400">
+                            <Bookmark size={24} />
+                        </div>
+                        <div>
+                            <h2 className="text-3xl font-bold text-white">Saved Lessons</h2>
+                            <p className="text-zinc-400 text-sm">{savedItems.length} items bookmarked</p>
+                        </div>
+                    </div>
+
+                    {savedItems.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {savedItems.map(lesson => (
+                                <button
+                                    key={lesson.id}
+                                    onClick={() => onLessonSelect(lesson)}
+                                    className="bg-zinc-900 border border-zinc-800 hover:border-indigo-500/50 p-6 rounded-2xl text-left transition-all group relative overflow-hidden"
+                                >
+                                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <ArrowRight size={20} className="text-indigo-400" />
+                                    </div>
+                                    <div className="flex items-center gap-2 mb-3">
+                                        {completedLessons.includes(lesson.id) && <CheckCircle size={14} className="text-emerald-500" />}
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Lesson</span>
+                                    </div>
+                                    <h4 className="text-xl font-bold text-white mb-2">{lesson.title}</h4>
+                                    <p className="text-sm text-zinc-400 line-clamp-2">{lesson.description}</p>
+                                </button>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 border border-dashed border-zinc-800 rounded-3xl">
+                            <Bookmark size={48} className="mx-auto text-zinc-800 mb-4" />
+                            <h3 className="text-zinc-500 font-bold">No bookmarks yet</h3>
+                            <p className="text-zinc-600 text-sm mt-2 max-w-xs mx-auto">Save lessons you want to revisit by clicking the bookmark icon in the lesson view.</p>
+                        </div>
+                    )}
+                </div>
+            );
         case 'gallery-menu': return (
             <div className="animate-slide-right">
                 <div className="mb-8">
@@ -337,6 +496,11 @@ const MainView: React.FC<MainViewProps> = (props) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {GALLERY_COLLECTIONS.map((cat) => {
                         const Icon = IconMap[cat.iconName];
+                        // Progress Logic
+                        const total = cat.lessons.length;
+                        const completed = cat.lessons.filter(l => completedLessons.includes(l.id)).length;
+                        const progress = (completed / total) * 100;
+
                         return (
                             <button
                                 key={cat.id}
@@ -351,9 +515,20 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                 <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-50 mix-blend-multiply transition-opacity`} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
+                                {completed > 0 && (
+                                    <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>
+                                )}
+
                                 <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
-                                    <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                        <Icon size={24} className="text-white" />
+                                    <div className="flex justify-between items-start">
+                                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                            <Icon size={24} className="text-white" />
+                                        </div>
+                                        {completed > 0 && (
+                                            <div className="px-2 py-1 rounded-md bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                                                {Math.round(progress)}% <CheckCircle size={10}/>
+                                            </div>
+                                        )}
                                     </div>
                                     <h3 className="text-2xl font-bold mb-2 text-white">{cat.title}</h3>
                                     <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
@@ -371,6 +546,11 @@ const MainView: React.FC<MainViewProps> = (props) => {
         );
         case 'category':
             if (!activeCategory) return null;
+            // Calculate Progress
+            const catTotal = activeCategory.lessons.length;
+            const catCompleted = activeCategory.lessons.filter(l => completedLessons.includes(l.id)).length;
+            const catProgress = (catCompleted / catTotal) * 100;
+
             return (
                 <div className="animate-slide-right">
                     <div className="relative mb-8 p-8 rounded-3xl overflow-hidden border border-zinc-800">
@@ -382,6 +562,17 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         <div className="relative z-10 text-center">
                             <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">{activeCategory.title}</h2>
                             <p className="text-zinc-200 max-w-xl mx-auto text-lg">{activeCategory.subtitle}</p>
+                            
+                            {/* Progress Bar */}
+                            <div className="mt-6 max-w-xs mx-auto">
+                                <div className="flex justify-between text-[10px] uppercase font-bold text-white/70 mb-1">
+                                    <span>Progress</span>
+                                    <span>{catCompleted} / {catTotal}</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-white/20 rounded-full overflow-hidden">
+                                    <div className="h-full bg-emerald-400 transition-all duration-1000 ease-out" style={{ width: `${catProgress}%` }}></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -392,56 +583,86 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         <button onClick={() => onScroll('right')} className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/50 backdrop-blur-md border border-zinc-700 rounded-full text-white opacity-100 shadow-xl hover:bg-zinc-800 hover:scale-110 transition-all"><ChevronRight size={24} /></button>
 
                         <div ref={scrollContainerRef} className="flex overflow-x-auto gap-4 pb-8 pt-2 scrollbar-hide snap-x snap-mandatory px-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                            {activeCategory.lessons.map((lesson, index) => (
-                                <button
-                                    key={lesson.id}
-                                    onClick={() => onLessonSelect(lesson)}
-                                    className="flex-shrink-0 w-64 snap-center text-left group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl isolate"
-                                    style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-                                >
-                                    <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${activeCategory.gradient} opacity-0 group-hover/card:opacity-100 transition-opacity`}></div>
-                                    <div className="p-6 h-full flex flex-col">
-                                        <div className="text-xs font-mono text-zinc-500 mb-2 flex justify-between">
-                                            <span>MODULE {String(index + 1).padStart(2, '0')}</span>
-                                            <div className="w-2 h-2 rounded-full bg-zinc-800 group-hover/card:bg-white transition-colors"></div>
+                            {activeCategory.lessons.map((lesson, index) => {
+                                const isCompleted = completedLessons.includes(lesson.id);
+                                return (
+                                    <button
+                                        key={lesson.id}
+                                        onClick={() => onLessonSelect(lesson)}
+                                        className="flex-shrink-0 w-64 snap-center text-left group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl isolate"
+                                        style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+                                    >
+                                        <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${activeCategory.gradient} opacity-0 group-hover/card:opacity-100 transition-opacity`}></div>
+                                        <div className="p-6 h-full flex flex-col">
+                                            <div className="text-xs font-mono text-zinc-500 mb-2 flex justify-between items-center">
+                                                <span>MODULE {String(index + 1).padStart(2, '0')}</span>
+                                                {isCompleted ? (
+                                                    <CheckCircle size={16} className="text-emerald-500" />
+                                                ) : (
+                                                    <div className="w-2 h-2 rounded-full bg-zinc-800 group-hover/card:bg-white transition-colors"></div>
+                                                )}
+                                            </div>
+                                            <h3 className={`text-xl font-bold mb-2 group-hover/card:text-white/90 transition-colors ${isCompleted ? 'text-emerald-400' : 'text-white'}`}>{lesson.title}</h3>
+                                            <p className="text-zinc-400 text-sm line-clamp-2 mb-4 flex-grow">{lesson.description}</p>
+                                            <div className="flex items-center text-xs font-bold uppercase tracking-wider text-zinc-500 group-hover/card:text-white transition-colors">
+                                                <Play size={12} className="mr-2 fill-current" /> {isCompleted ? 'Review' : 'Initialize'}
+                                            </div>
                                         </div>
-                                        <h3 className="text-xl font-bold text-white mb-2 group-hover/card:text-white/90 transition-colors">{lesson.title}</h3>
-                                        <p className="text-zinc-400 text-sm line-clamp-2 mb-4 flex-grow">{lesson.description}</p>
-                                        <div className="flex items-center text-xs font-bold uppercase tracking-wider text-zinc-500 group-hover/card:text-white transition-colors">
-                                            <Play size={12} className="mr-2 fill-current" /> Initialize
-                                        </div>
-                                    </div>
-                                </button>
-                            ))}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
                 </div>
             );
         case 'lesson':
-            if (!activeLesson || !activeCategory) return null;
+            if (!activeLesson) return null;
+            const isBookmarked = bookmarkedLessons.includes(activeLesson.id);
+            const isLessonCompleted = completedLessons.includes(activeLesson.id);
+
             return (
                 <div className="animate-zoom-in">
                     <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl relative">
-                        <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
-                            <button
-                                onClick={() => prevLesson && onLessonSelect(prevLesson)}
-                                disabled={!prevLesson}
-                                className={`flex items-center gap-2 text-sm font-medium transition-colors ${prevLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
-                            >
-                                <ChevronLeft size={16} />
-                                <span className="hidden sm:inline">Previous</span>
-                            </button>
-                            <div className="text-xs font-mono text-zinc-500">
-                                {currentIndex + 1} / {activeCategory.lessons.length}
+                        <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-30">
+                            {activeCategory ? (
+                                <button
+                                    onClick={() => prevLesson && onLessonSelect(prevLesson)}
+                                    disabled={!prevLesson}
+                                    className={`flex items-center gap-2 text-sm font-medium transition-colors ${prevLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
+                                >
+                                    <ChevronLeft size={16} />
+                                    <span className="hidden sm:inline">Previous</span>
+                                </button>
+                            ) : (
+                                <div /> /* Spacer */
+                            )}
+                            
+                            <div className="flex items-center gap-4">
+                                <button 
+                                    onClick={() => toggleComplete(activeLesson.id)}
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${isLessonCompleted ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+                                >
+                                    <CheckCircle size={14} /> {isLessonCompleted ? 'Completed' : 'Mark Complete'}
+                                </button>
+                                <button 
+                                    onClick={() => toggleBookmark(activeLesson.id)}
+                                    className={`p-2 rounded-full transition-colors ${isBookmarked ? 'text-indigo-400 bg-indigo-500/10' : 'text-zinc-500 hover:text-white hover:bg-zinc-800'}`}
+                                    title={isBookmarked ? "Remove Bookmark" : "Bookmark Lesson"}
+                                >
+                                    <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
+                                </button>
                             </div>
-                            <button
-                                onClick={() => nextLesson && onLessonSelect(nextLesson)}
-                                disabled={!nextLesson}
-                                className={`flex items-center gap-2 text-sm font-medium transition-colors ${nextLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
-                            >
-                                <span className="hidden sm:inline">Next</span>
-                                <ChevronRight size={16} />
-                            </button>
+
+                            {activeCategory ? (
+                                <button
+                                    onClick={() => nextLesson && onLessonSelect(nextLesson)}
+                                    disabled={!nextLesson}
+                                    className={`flex items-center gap-2 text-sm font-medium transition-colors ${nextLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
+                                >
+                                    <span className="hidden sm:inline">Next</span>
+                                    <ChevronRight size={16} />
+                                </button>
+                            ) : <div/>}
                         </div>
 
                         <div className="p-4 md:p-8">
@@ -457,7 +678,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                         <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed">{activeLesson.longDescription}</p>
                                     </div>
                                     <div className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/50">
-                                        <div className="flex items-center gap-2 text-zinc-400 text-xs font-bold uppercase tracking-widest mb-3"><Info size={14} /> Pro Tip</div>
+                                        <div className="flex items-center gap-2 text-zinc-400 text-xs font-bold uppercase tracking-widest mb-3"><Lightbulb size={14} /> Pro Tip</div>
                                         <p className="text-sm text-zinc-400 italic">"Don't just memorize the definitions. Use the sliders on the left to develop an intuition for how the setting changes the feeling of an image."</p>
                                     </div>
                                 </div>
