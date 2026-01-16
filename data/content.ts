@@ -1,4 +1,5 @@
 
+
 import { Category } from '../types';
 
 export const LEARNING_MODULES: Category[] = [
@@ -80,12 +81,6 @@ export const LEARNING_MODULES: Category[] = [
         title: 'Rule of Thirds', 
         description: 'Balance and Interest',
         longDescription: 'Divide your image into nine equal segments by two vertical and two horizontal lines. Placing the subject along these lines or their intersections creates more tension, energy and interest.'
-      },
-      { 
-        id: 'leading', 
-        title: 'Leading Lines', 
-        description: 'Guiding the eye',
-        longDescription: 'Use natural lines in the environment (roads, fences, shadows) to lead the viewer’s eye toward the main subject of the photo.'
       },
       {
         id: 'symmetry',

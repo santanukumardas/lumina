@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Category, Lesson, Mission } from './types';
 import { Visualizer } from './components/Simulations';
 import { LEARNING_MODULES, GALLERY_COLLECTIONS } from './data/content';
@@ -12,8 +12,12 @@ import StudioPlanner from './components/tools/StudioPlanner';
 import DofCalculator from './components/tools/DofCalculator';
 import NdSimulator from './components/tools/NdSimulator';
 import RgbCurveSim from './components/tools/RgbCurveSim';
+import ZoneSystem from './components/tools/ZoneSystem';
+import DiffractionLimit from './components/tools/DiffractionLimit';
 import MissionGenerator from './components/features/MissionGenerator';
 import PhotoAnalyzer from './components/features/PhotoAnalyzer';
+import ConceptLibrary from './components/features/ConceptLibrary';
+import GlobalSettings from './components/features/GlobalSettings';
 
 import { 
   Camera, 
@@ -41,7 +45,10 @@ import {
   Timer,
   Target,
   Sparkles,
-  Activity
+  Activity,
+  Layers,
+  Grid,
+  GraduationCap
 } from 'lucide-react';
 
 const IconMap = {
@@ -60,9 +67,10 @@ const IconMap = {
 };
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves'>('home');
+  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction'>('home');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
   
   // Persistent Mission State
   const [activeMission, setActiveMission] = useState<Mission | null>(() => {
@@ -74,30 +82,53 @@ export default function App() {
   // Global state for post-production image
   const [postProdImage, setPostProdImage] = useState<string | null>(null);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollPositions = useRef<Record<string, number>>({});
+
+  // Helper to change view and manage scroll
+  const navigateTo = (mode: typeof viewMode, restore: boolean = false) => {
+    // Save current scroll position for the view we are leaving
+    scrollPositions.current[viewMode] = window.scrollY;
+    
+    setViewMode(mode);
+
+    // After render, restore scroll or reset to top
+    // Increased timeout to ensure DOM is ready
+    setTimeout(() => {
+        const targetScroll = restore ? (scrollPositions.current[mode] || 0) : 0;
+        window.scrollTo({
+            top: targetScroll,
+            behavior: 'instant' 
+        });
+    }, 10);
+  };
 
   const handleCategorySelect = (category: Category) => {
     setActiveCategory(category);
-    setViewMode('category');
+    navigateTo('category');
   };
 
   const handleLessonSelect = (lesson: Lesson) => {
     setActiveLesson(lesson);
-    setViewMode('lesson');
+    navigateTo('lesson');
   };
 
   const handleGalleryClick = () => {
-      setViewMode('gallery-menu');
       setActiveCategory(null);
+      navigateTo('gallery-menu');
   }
 
   const handleCritiqueClick = () => {
-      setViewMode('critique');
       setActiveCategory(null);
+      navigateTo('critique');
+  }
+
+  const handleConceptsClick = () => {
+      setActiveCategory(null);
+      navigateTo('concepts');
   }
 
   const handleVerifyMission = (mission: Mission) => {
-      setViewMode('critique');
+      navigateTo('critique');
   }
 
   const handleSaveMission = (mission: Mission) => {
@@ -112,23 +143,25 @@ export default function App() {
 
   const handleBack = () => {
     if (viewMode === 'lesson') {
-      setViewMode('category');
       setActiveLesson(null);
+      navigateTo('category', true);
     } else if (viewMode === 'category') {
       if (GALLERY_COLLECTIONS.find(c => c.id === activeCategory?.id)) {
-          setViewMode('gallery-menu');
+          setActiveCategory(null);
+          navigateTo('gallery-menu', true);
       } else {
-          setViewMode('home');
+          setActiveCategory(null);
+          navigateTo('home', true);
       }
-      setActiveCategory(null);
-    } else if (['gallery-menu', 'critique', 'missions', 'darkroom', 'chroma-lab', 'studio-planner', 'dof-calc', 'nd-sim', 'rgb-curves'].includes(viewMode)) {
-        setViewMode('home');
+    } else {
+        navigateTo('home', true);
     }
   };
   
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-        const { current } = scrollRef;
+    if (scrollContainerRef.current) {
+        const { current } = scrollContainerRef;
         const scrollAmount = 300; 
         if (direction === 'left') {
             current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
@@ -142,18 +175,46 @@ export default function App() {
       if (viewMode === 'gallery-menu') return 'Curated Galleries';
       if (viewMode === 'critique') return activeMission ? 'Mission Verification' : 'AI Photo Critic';
       if (viewMode === 'missions') return 'Creative Missions';
+      if (viewMode === 'concepts') return 'Concept Library';
       if (viewMode === 'darkroom') return 'The Darkroom';
       if (viewMode === 'chroma-lab') return 'Chroma Lab';
       if (viewMode === 'studio-planner') return 'Studio Planner';
       if (viewMode === 'dof-calc') return 'DoF Visualizer';
       if (viewMode === 'nd-sim') return 'ND Filter Lab';
       if (viewMode === 'rgb-curves') return 'RGB Curve Sim';
+      if (viewMode === 'zone-system') return 'Zone System Map';
+      if (viewMode === 'diffraction') return 'Diffraction Calc';
       return activeCategory?.title || 'Lumina';
   };
 
+  // derived state for lesson navigation
+  let currentIndex = -1;
+  let prevLesson: Lesson | null = null;
+  let nextLesson: Lesson | null = null;
+
+  if (activeCategory && activeLesson) {
+      currentIndex = activeCategory.lessons.findIndex(l => l.id === activeLesson.id);
+      if (currentIndex > 0) prevLesson = activeCategory.lessons[currentIndex - 1];
+      if (currentIndex < activeCategory.lessons.length - 1) nextLesson = activeCategory.lessons[currentIndex + 1];
+  }
+
+  // Helper for AI Badge
+  const AIBadge = () => (
+      <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg z-20 border border-white/20">
+          <Sparkles size={10} className="text-indigo-100" /> AI POWERED
+      </div>
+  );
+
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20">
-      <Header viewMode={viewMode} onBack={handleBack} title={getPageTitle()} />
+      <Header 
+        viewMode={viewMode} 
+        onBack={handleBack} 
+        title={getPageTitle()} 
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      <GlobalSettings isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
       <main className="max-w-7xl mx-auto px-4 py-8 pb-24">
         
@@ -202,6 +263,34 @@ export default function App() {
                   </button>
                 );
               })}
+              
+              {/* CONCEPTS & TECHNIQUES CARD */}
+              <button
+                onClick={handleConceptsClick}
+                className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
+                style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+              >
+                    <AIBadge />
+                    <div 
+                      className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
+                      style={{ backgroundImage: `url(https://images.unsplash.com/photo-1456926631375-92c8ce872def?q=60&w=600&auto=format&fit=crop)` }}
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br from-indigo-600 to-slate-900 opacity-50 mix-blend-multiply transition-opacity`} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+                    
+                    <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
+                      <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                        <GraduationCap size={24} className="text-white" />
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2 text-white">Concepts & Techniques</h3>
+                      <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
+                        AI-Powered Explanations
+                      </p>
+                      <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                        20+ Topics <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+              </button>
 
               {/* GALLERY ENTRY CARD */}
               <button
@@ -236,10 +325,10 @@ export default function App() {
                 <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2">
                     <Sliders size={18} className="text-zinc-400"/> Pro Tools
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                      {/* DARKROOM BUTTON */}
                      <button 
-                        onClick={() => setViewMode('darkroom')}
+                        onClick={() => navigateTo('darkroom')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -253,7 +342,7 @@ export default function App() {
                      
                      {/* CHROMA LAB BUTTON */}
                      <button 
-                        onClick={() => setViewMode('chroma-lab')}
+                        onClick={() => navigateTo('chroma-lab')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -267,7 +356,7 @@ export default function App() {
 
                      {/* STUDIO PLANNER BUTTON */}
                      <button 
-                        onClick={() => setViewMode('studio-planner')}
+                        onClick={() => navigateTo('studio-planner')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -281,7 +370,7 @@ export default function App() {
 
                      {/* DOF VISUALIZER BUTTON */}
                      <button 
-                        onClick={() => setViewMode('dof-calc')}
+                        onClick={() => navigateTo('dof-calc')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -295,7 +384,7 @@ export default function App() {
 
                      {/* ND FILTER LAB BUTTON */}
                      <button 
-                        onClick={() => setViewMode('nd-sim')}
+                        onClick={() => navigateTo('nd-sim')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -309,7 +398,7 @@ export default function App() {
 
                      {/* RGB CURVE SIM BUTTON */}
                      <button 
-                        onClick={() => setViewMode('rgb-curves')}
+                        onClick={() => navigateTo('rgb-curves')}
                         className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
                      >
                          <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
@@ -320,17 +409,46 @@ export default function App() {
                              <p className="text-xs text-zinc-400">Color Grading</p>
                          </div>
                      </button>
+
+                     {/* ZONE SYSTEM BUTTON */}
+                     <button 
+                        onClick={() => navigateTo('zone-system')}
+                        className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
+                     >
+                         <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
+                             <Layers className="text-gray-200" />
+                         </div>
+                         <div className="text-left">
+                             <h4 className="text-white font-bold">Zone System</h4>
+                             <p className="text-xs text-zinc-400">Exposure Map</p>
+                         </div>
+                     </button>
+
+                     {/* DIFFRACTION LIMIT BUTTON */}
+                     <button 
+                        onClick={() => navigateTo('diffraction')}
+                        className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800"
+                     >
+                         <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
+                             <Grid className="text-teal-400" />
+                         </div>
+                         <div className="text-left">
+                             <h4 className="text-white font-bold">Diffraction</h4>
+                             <p className="text-xs text-zinc-400">Sharpness Physics</p>
+                         </div>
+                     </button>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* MISSION CARD */}
               <button
-                onClick={() => setViewMode('missions')}
+                onClick={() => navigateTo('missions')}
                 className={`group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate
                     ${activeMission ? 'border-emerald-500/50 hover:border-emerald-400' : 'border-zinc-800 hover:border-zinc-600'}`}
                 style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
               >
+                    <AIBadge />
                     <div 
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
                       style={{ backgroundImage: `url(https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=60&w=600&auto=format&fit=crop)` }}
@@ -370,6 +488,7 @@ export default function App() {
                 className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
                 style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
               >
+                    <AIBadge />
                     <div 
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
                       style={{ backgroundImage: `url(https://images.unsplash.com/photo-1531297461136-82lw9z1p7w?q=60&w=1200&auto=format&fit=crop)` }}
@@ -391,16 +510,13 @@ export default function App() {
                             Upload your photo for instant feedback on composition, exposure, and technique.
                         </p>
                       </div>
-                      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-cyan-500/30">
-                          <Sparkles size={14} /> New Feature
-                      </div>
                     </div>
               </button>
             </div>
           </div>
         )}
 
-        {/* MISSIONS VIEW */}
+        {/* REST OF THE COMPONENTS... */}
         {viewMode === 'missions' && (
             <MissionGenerator 
                 onVerify={handleVerifyMission} 
@@ -409,40 +525,30 @@ export default function App() {
                 onDiscardMission={handleDiscardMission}
             />
         )}
-
-        {/* DARKROOM VIEW */}
+        
+        {viewMode === 'concepts' && <ConceptLibrary />}
         {viewMode === 'darkroom' && <Darkroom />}
-        
-        {/* CHROMA LAB VIEW */}
         {viewMode === 'chroma-lab' && <ChromaLab />}
-        
-        {/* STUDIO PLANNER VIEW */}
         {viewMode === 'studio-planner' && <StudioPlanner />}
-
-        {/* DOF CALCULATOR VIEW */}
         {viewMode === 'dof-calc' && <DofCalculator />}
-
-        {/* ND SIMULATOR VIEW */}
         {viewMode === 'nd-sim' && <NdSimulator />}
-        
-        {/* RGB CURVE SIM VIEW */}
         {viewMode === 'rgb-curves' && <RgbCurveSim />}
+        {viewMode === 'zone-system' && <ZoneSystem />}
+        {viewMode === 'diffraction' && <DiffractionLimit />}
 
-        {/* CRITIQUE VIEW */}
         {viewMode === 'critique' && (
              <div className="animate-fade-in">
                 <PhotoAnalyzer 
                     mission={activeMission} 
-                    onClearMission={() => setViewMode('missions')}
+                    onClearMission={() => navigateTo('missions', true)}
                     onCompleteMission={() => {
                         handleDiscardMission();
-                        setViewMode('missions');
+                        navigateTo('missions', true);
                     }}
                 />
              </div>
         )}
 
-        {/* GALLERY MENU VIEW */}
         {viewMode === 'gallery-menu' && (
              <div className="animate-slide-right">
                 <div className="mb-8">
@@ -518,7 +624,7 @@ export default function App() {
                 </button>
 
                 <div 
-                    ref={scrollRef}
+                    ref={scrollContainerRef}
                     className="flex overflow-x-auto gap-4 pb-8 pt-2 scrollbar-hide snap-x snap-mandatory px-2"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
@@ -550,11 +656,33 @@ export default function App() {
         )}
 
         {/* LESSON VIEW (VISUALIZER) */}
-        {viewMode === 'lesson' && activeLesson && (
+        {viewMode === 'lesson' && activeLesson && activeCategory && (
           <div className="animate-zoom-in">
             <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl relative">
-               {/* Header strip */}
-               <div className="w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+               {/* Nav Bar */}
+               <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
+                    <button 
+                        onClick={() => prevLesson && handleLessonSelect(prevLesson)}
+                        disabled={!prevLesson}
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors ${prevLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
+                    >
+                        <ChevronLeft size={16} />
+                        <span className="hidden sm:inline">Previous</span>
+                    </button>
+
+                    <div className="text-xs font-mono text-zinc-500">
+                        {currentIndex + 1} / {activeCategory.lessons.length}
+                    </div>
+
+                    <button 
+                        onClick={() => nextLesson && handleLessonSelect(nextLesson)}
+                        disabled={!nextLesson}
+                        className={`flex items-center gap-2 text-sm font-medium transition-colors ${nextLesson ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 cursor-not-allowed'}`}
+                    >
+                        <span className="hidden sm:inline">Next</span>
+                        <ChevronRight size={16} />
+                    </button>
+               </div>
                
                <div className="p-4 md:p-8">
                   <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -584,7 +712,7 @@ export default function App() {
                                    <Info size={14} /> Pro Tip
                                </div>
                                <p className="text-sm text-zinc-400 italic">
-                                   "Don't just memorize the definitions. Use the sliders on the left to develop an intuition for how the setting changes the feeling of the image."
+                                   "Don't just memorize the definitions. Use the sliders on the left to develop an intuition for how the setting changes the feeling of an image."
                                </p>
                            </div>
                       </div>

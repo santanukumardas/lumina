@@ -11,6 +11,10 @@ const ChromaLab: React.FC = () => {
     const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+                alert('Unsupported file format. Please upload JPEG, PNG, or WebP.');
+                return;
+            }
             const url = URL.createObjectURL(file);
             setImage(url);
             extractColors(url);
@@ -75,7 +79,7 @@ const ChromaLab: React.FC = () => {
                             <p className="text-zinc-400 font-bold">Upload Reference Photo</p>
                         </div>
                     )}
-                    <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/*" />
+                    <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/jpeg, image/png, image/webp" />
                  </div>
                  
                  <canvas ref={canvasRef} className="hidden" />

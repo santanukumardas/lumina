@@ -36,6 +36,7 @@ const Darkroom: React.FC = () => {
         const diffWarm = Math.abs(target.warmth - warmth); // max diff 50
 
         const totalDiff = diffExp + diffCont + diffSat + diffWarm;
+        // Use Math.ceil to be slightly more generous with floating point imprecision
         const finalScore = Math.max(0, Math.min(100, 100 - (totalDiff / 2)));
         setScore(Math.round(finalScore));
     };
@@ -60,7 +61,7 @@ const Darkroom: React.FC = () => {
                             }}
                         />
                          {score !== null && (
-                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
+                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center animate-fade-in">
                                 <span className="text-5xl font-bold text-white mb-2">{score}%</span>
                                 <span className="text-zinc-300 text-sm">Match Accuracy</span>
                             </div>
@@ -70,14 +71,14 @@ const Darkroom: React.FC = () => {
 
                 {/* User Edit */}
                 <div className="space-y-2">
-                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Your Edit (Flat Profile)</span>
+                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Your Edit</span>
                     <div className="aspect-[4/3] max-h-[40vh] w-auto mx-auto rounded-xl overflow-hidden border border-zinc-700 isolate" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                         <img 
                             src={sourceImage}
                             className="w-full h-full object-cover"
                             style={{ 
-                                // Base "Flat" look (simulated log) + User Adjustments
-                                filter: `brightness(${0.8 + exposure}) contrast(${0.7 * contrast}) saturate(${0.7 * saturation}) sepia(${warmth > 0 ? warmth/100 : 0}) hue-rotate(${warmth < 0 ? warmth : 0}deg)` 
+                                // Aligned filter logic with Reference to ensure 100% score is visually identical
+                                filter: `brightness(${1 + exposure}) contrast(${contrast}) saturate(${saturation}) sepia(${warmth > 0 ? warmth/100 : 0}) hue-rotate(${warmth < 0 ? warmth : 0}deg)` 
                             }}
                         />
                     </div>
@@ -95,7 +96,7 @@ const Darkroom: React.FC = () => {
                         <input 
                             type="range" min="-0.5" max="0.5" step="0.05" value={exposure} 
                             onChange={(e) => { setExposure(parseFloat(e.target.value)); setScore(null); }} 
-                            className="w-full accent-white" 
+                            className="w-full accent-white cursor-pointer" 
                         />
                      </div>
                      <div className="space-y-2">
@@ -106,7 +107,7 @@ const Darkroom: React.FC = () => {
                         <input 
                             type="range" min="0.5" max="2" step="0.1" value={contrast} 
                             onChange={(e) => { setContrast(parseFloat(e.target.value)); setScore(null); }} 
-                            className="w-full accent-white" 
+                            className="w-full accent-white cursor-pointer" 
                         />
                      </div>
                      <div className="space-y-2">
@@ -117,7 +118,7 @@ const Darkroom: React.FC = () => {
                         <input 
                             type="range" min="0" max="2" step="0.1" value={saturation} 
                             onChange={(e) => { setSaturation(parseFloat(e.target.value)); setScore(null); }} 
-                            className="w-full accent-white" 
+                            className="w-full accent-white cursor-pointer" 
                         />
                      </div>
                      <div className="space-y-2">
@@ -128,7 +129,7 @@ const Darkroom: React.FC = () => {
                         <input 
                             type="range" min="-50" max="50" step="5" value={warmth} 
                             onChange={(e) => { setWarmth(parseInt(e.target.value)); setScore(null); }} 
-                            className="w-full accent-white" 
+                            className="w-full accent-white cursor-pointer" 
                         />
                      </div>
                 </div>

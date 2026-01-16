@@ -1,9 +1,10 @@
 
+
 export type LessonId = 
   // Exposure
   | 'aperture' | 'shutter' | 'iso' | 'histogram' | 'metering' | 'focal-length' | 'sensor-size' | 'focus-peaking' | 'dynamic-range'
   // Composition
-  | 'thirds' | 'leading' | 'symmetry' | 'golden-ratio' | 'framing' | 'negative-space' | 'balance' | 'dutch-angle' | 'keystoning'
+  | 'thirds' | 'symmetry' | 'golden-ratio' | 'framing' | 'negative-space' | 'balance' | 'dutch-angle' | 'keystoning'
   // Lighting
   | 'hard-soft' | 'color-temp' | 'three-point' | 'golden-hour' | 'inverse-square' | 'gobos' | 'flash-sync'
   // Post-Production

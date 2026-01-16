@@ -1,16 +1,17 @@
 
 import React from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Settings, Monitor } from 'lucide-react';
 
 interface HeaderProps { 
     viewMode: string;
     onBack: () => void;
     title?: string;
+    onOpenSettings?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ viewMode, onBack, title }) => (
+const Header: React.FC<HeaderProps> = ({ viewMode, onBack, title, onOpenSettings }) => (
   <header className="sticky top-0 z-50 w-full bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800 transition-all duration-300">
-    <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
       <div className="flex items-center gap-4">
         {viewMode !== 'home' && (
           <button 
@@ -32,9 +33,17 @@ const Header: React.FC<HeaderProps> = ({ viewMode, onBack, title }) => (
         </h1>
       </div>
       <div className="flex items-center gap-3">
-          <div className="hidden sm:flex text-xs font-medium text-zinc-500 bg-zinc-900 px-3 py-1 rounded-full border border-zinc-800">
-            MASTERCLASS BETA
+          <div className="hidden md:flex items-center gap-2 text-[10px] font-medium text-zinc-600 bg-zinc-900/50 px-3 py-1.5 rounded-full border border-zinc-800/50">
+            <Monitor size={12} />
+            <span>Best experienced on Desktop</span>
           </div>
+          <button 
+            onClick={onOpenSettings}
+            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full transition-colors"
+            title="AI Settings"
+          >
+              <Settings size={20} />
+          </button>
       </div>
     </div>
   </header>
