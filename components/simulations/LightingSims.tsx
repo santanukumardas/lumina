@@ -13,7 +13,7 @@ export const LightingSim: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-      <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-900 rounded-2xl border border-zinc-800 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-900 rounded-2xl border border-zinc-800 flex items-center justify-center overflow-hidden shadow-2xl">
         <div 
             className="w-40 h-40 rounded-full bg-zinc-700 relative shadow-2xl transition-all duration-100"
             style={{
@@ -34,8 +34,8 @@ export const LightingSim: React.FC = () => {
              </div>
         </div>
       </div>
-      <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-         <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+      <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+         <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
           <span>Side Light</span>
           <span>Top Light</span>
           <span>Side Light</span>
@@ -92,8 +92,8 @@ export const ColorTempSim: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span className="text-orange-400">Warm (Candle)</span>
                     <span className="text-white">Neutral (Daylight)</span>
                     <span className="text-blue-400">Cool (Shade)</span>
@@ -156,24 +156,24 @@ export const ThreePointSim: React.FC = () => {
              <div className="grid grid-cols-3 gap-4 w-full">
                  <button 
                     onClick={() => setLights({...lights, key: !lights.key})}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.key ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}`}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.key ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900/50 border-zinc-800 text-zinc-600'}`}
                  >
                     <Zap size={20} className={lights.key ? 'text-yellow-400' : 'text-zinc-700'} />
-                    <span className="text-xs font-bold uppercase">Key Light</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Key Light</span>
                  </button>
                  <button 
                     onClick={() => setLights({...lights, fill: !lights.fill})}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.fill ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}`}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.fill ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900/50 border-zinc-800 text-zinc-600'}`}
                  >
                     <LampFloor size={20} className={lights.fill ? 'text-blue-300' : 'text-zinc-700'} />
-                    <span className="text-xs font-bold uppercase">Fill Light</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Fill Light</span>
                  </button>
                  <button 
                     onClick={() => setLights({...lights, back: !lights.back})}
-                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.back ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}`}
+                    className={`p-4 rounded-xl border flex flex-col items-center gap-2 transition-all ${lights.back ? 'bg-zinc-800 border-zinc-600 text-white' : 'bg-zinc-900/50 border-zinc-800 text-zinc-600'}`}
                  >
                     <Sun size={20} className={lights.back ? 'text-white' : 'text-zinc-700'} />
-                    <span className="text-xs font-bold uppercase">Back Light</span>
+                    <span className="text-xs font-bold uppercase tracking-wider">Back Light</span>
                  </button>
              </div>
         </div>
@@ -243,8 +243,8 @@ export const GoldenHourSim: React.FC = () => {
                 />
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span>Noon (Hard Light)</span>
                     <span>Golden Hour (Soft/Warm)</span>
                 </div>
@@ -302,8 +302,8 @@ export const InverseSquareSim: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span>Close (1m)</span>
                     <span>Far (10m)</span>
                 </div>
@@ -317,7 +317,7 @@ export const InverseSquareSim: React.FC = () => {
                     className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white hover:accent-yellow-400 transition-colors"
                 />
                  <div className="mt-4 text-center">
-                    <span className="text-3xl font-bold text-white tracking-tighter">{Math.round(intensity * 100)}%</span>
+                    <span className="text-3xl font-bold text-white tracking-tighter font-mono">{Math.round(intensity * 100)}%</span>
                     <span className="text-sm text-zinc-400 ml-2">Light Intensity</span>
                     <p className="text-zinc-500 text-sm mt-1">
                         Double the distance, quarter the light. Light falls off very quickly.
@@ -354,12 +354,12 @@ export const FlashSyncSim: React.FC = () => {
                      </div>
                 </div>
 
-                <div className="absolute bottom-6 font-bold text-2xl text-white uppercase tracking-widest drop-shadow-md">
+                <div className="absolute bottom-6 font-bold text-2xl text-white uppercase tracking-widest drop-shadow-md font-serif italic">
                     {curtain} Curtain Sync
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex gap-4">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 flex gap-4">
                  <button 
                     onClick={() => setCurtain('front')}
                     className={`flex-1 py-4 rounded-lg text-sm font-medium transition-all ${curtain === 'front' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400'}`}
@@ -421,7 +421,7 @@ export const GoboSim: React.FC = () => {
                      <button 
                         key={p}
                         onClick={() => setPattern(p as any)}
-                        className={`py-3 rounded-lg text-sm font-medium capitalize transition-all ${pattern === p ? 'bg-zinc-700 text-white shadow-inner border border-zinc-500' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
+                        className={`py-3 rounded-lg text-sm font-medium capitalize transition-all ${pattern === p ? 'bg-zinc-700 text-white shadow-inner border border-zinc-500' : 'bg-zinc-900/60 backdrop-blur-md border border-white/5 text-zinc-400 hover:bg-zinc-800'}`}
                      >
                          {p}
                      </button>

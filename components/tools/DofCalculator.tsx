@@ -27,19 +27,19 @@ const DofCalculator: React.FC = () => {
     return (
         <div className="max-w-6xl mx-auto p-4 animate-slide-up">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Depth of Field Visualizer</h2>
+                <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Depth of Field Visualizer</h2>
                 <p className="text-zinc-400">Visualize your sharp zone and hyperfocal distance.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 {/* Visualizer */}
-                <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 relative h-[40vh] min-h-[300px] overflow-hidden flex flex-col justify-center shadow-inner select-none">
+                <div className="bg-zinc-900/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 relative h-[40vh] min-h-[300px] overflow-hidden flex flex-col justify-center shadow-2xl select-none">
                     
                     {/* Background Ruler / Grid */}
                     <div className="absolute inset-0 flex flex-col justify-end pb-8 opacity-20 pointer-events-none">
                          <div className="w-full border-b border-zinc-500 relative h-4">
                              {[0, 5, 10, 15, 20].map(m => (
-                                 <div key={m} className="absolute bottom-0 h-3 border-l border-zinc-500 text-[10px] pl-1 text-zinc-400" style={{ left: `${(m/20)*100}%` }}>
+                                 <div key={m} className="absolute bottom-0 h-3 border-l border-zinc-500 text-[10px] pl-1 text-zinc-400 font-mono" style={{ left: `${(m/20)*100}%` }}>
                                      {m}m
                                  </div>
                              ))}
@@ -53,7 +53,7 @@ const DofCalculator: React.FC = () => {
                     <div className="absolute inset-x-0 top-1/2 h-px bg-zinc-800"></div>
                     
                     {/* Camera */}
-                    <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-zinc-950 p-1 rounded-full border border-zinc-700">
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-zinc-950 p-1 rounded-full border border-zinc-700 shadow-lg">
                         <Camera className="text-zinc-400" size={24} />
                     </div>
 
@@ -62,8 +62,8 @@ const DofCalculator: React.FC = () => {
                         className="absolute top-8 bottom-12 w-0.5 border-l-2 border-dashed border-amber-500/50 z-10 transition-all duration-300"
                         style={{ left: `${scale(hyperfocal)}%` }}
                     >
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-amber-500 bg-zinc-900/80 px-1 rounded whitespace-nowrap border border-amber-500/30">
-                            Hyperfocal: {hyperfocal.toFixed(1)}m
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] font-bold text-amber-500 bg-zinc-900/80 px-2 py-1 rounded whitespace-nowrap border border-amber-500/30 font-mono">
+                            HF: {hyperfocal.toFixed(1)}m
                         </div>
                     </div>
 
@@ -76,8 +76,8 @@ const DofCalculator: React.FC = () => {
                             borderRightWidth: farLimit === Infinity ? 0 : 2
                         }}
                     >
-                         <div className="absolute top-2 left-1 text-[10px] text-emerald-400 font-bold">NEAR</div>
-                         <div className="absolute bottom-2 right-1 text-[10px] text-emerald-400 font-bold text-right">FAR</div>
+                         <div className="absolute top-2 left-1 text-[10px] text-emerald-400 font-bold tracking-widest">NEAR</div>
+                         <div className="absolute bottom-2 right-1 text-[10px] text-emerald-400 font-bold text-right tracking-widest">FAR</div>
                          
                          {/* Infinity Fade if applicable */}
                          {farLimit === Infinity && (
@@ -90,7 +90,7 @@ const DofCalculator: React.FC = () => {
                         className="absolute top-[25%] bottom-[25%] w-px bg-white/50 z-10 transition-all duration-300"
                         style={{ left: `${scale(focusDistance)}%` }}
                     >
-                         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-zinc-500 font-mono whitespace-nowrap flex items-center gap-1">
+                         <div className="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] text-zinc-500 font-mono whitespace-nowrap flex items-center gap-1 bg-zinc-900/50 px-1 rounded">
                             <ScanLine size={10}/> Focus
                          </div>
                     </div>
@@ -103,89 +103,89 @@ const DofCalculator: React.FC = () => {
                         <div className={`p-2 rounded-full transition-colors duration-300 ${inFocus ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-red-500/20 text-red-500 border border-red-500'}`}>
                             <Users size={24} />
                         </div>
-                        <div className={`mt-2 text-xs font-mono font-bold whitespace-nowrap px-2 py-0.5 rounded transition-colors duration-300 ${inFocus ? 'text-emerald-400 bg-black/50' : 'text-red-400 bg-black/50'}`}>
-                            {inFocus ? 'IN FOCUS' : 'OUT OF FOCUS'}
+                        <div className={`mt-2 text-xs font-mono font-bold whitespace-nowrap px-2 py-0.5 rounded transition-colors duration-300 ${inFocus ? 'text-emerald-400 bg-black/50 border border-emerald-500/30' : 'text-red-400 bg-black/50 border border-red-500/30'}`}>
+                            {inFocus ? 'SHARP' : 'SOFT'}
                         </div>
-                        <div className="text-[10px] text-zinc-500 mt-0.5">{subjectDistance}m</div>
+                        <div className="text-[10px] text-zinc-500 mt-0.5 font-mono">{subjectDistance}m</div>
                     </div>
                 </div>
 
                 {/* Stats Panel */}
                 <div className="grid grid-cols-2 gap-4 h-min">
-                     <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 flex flex-col justify-center">
-                         <span className="text-zinc-500 text-xs font-bold uppercase mb-1">Total Depth of Field</span>
-                         <span className="text-2xl text-emerald-400 font-bold flex items-center gap-2">
+                     <div className="bg-zinc-900/60 backdrop-blur-md p-5 rounded-xl border border-white/5 flex flex-col justify-center">
+                         <span className="text-zinc-500 text-xs font-bold uppercase mb-1 tracking-wider">Total Depth of Field</span>
+                         <span className="text-2xl text-emerald-400 font-bold flex items-center gap-2 font-mono">
                              {farLimit === Infinity ? 'Infinite' : (farLimit - nearLimit).toFixed(2) + 'm'}
                              {farLimit === Infinity && <InfinityIcon size={20} />}
                          </span>
-                         <span className="text-xs text-zinc-600 mt-2">
-                             Sharp from {nearLimit.toFixed(2)}m to {farLimit === Infinity ? '∞' : farLimit.toFixed(2) + 'm'}
+                         <span className="text-xs text-zinc-600 mt-2 font-mono">
+                             {nearLimit.toFixed(2)}m <span className="text-zinc-500">to</span> {farLimit === Infinity ? '∞' : farLimit.toFixed(2) + 'm'}
                          </span>
                      </div>
-                     <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800 flex flex-col justify-center">
-                         <span className="text-zinc-500 text-xs font-bold uppercase mb-1">Hyperfocal Distance</span>
-                         <span className="text-2xl text-amber-400 font-bold">{hyperfocal.toFixed(2)}m</span>
+                     <div className="bg-zinc-900/60 backdrop-blur-md p-5 rounded-xl border border-white/5 flex flex-col justify-center">
+                         <span className="text-zinc-500 text-xs font-bold uppercase mb-1 tracking-wider">Hyperfocal Dist.</span>
+                         <span className="text-2xl text-amber-400 font-bold font-mono">{hyperfocal.toFixed(2)}m</span>
                          <span className="text-xs text-zinc-600 mt-2">
-                             Focus here to keep everything from { (hyperfocal/2).toFixed(2) }m to Infinity sharp.
+                             Focus here to keep <span className="font-mono text-zinc-500">{ (hyperfocal/2).toFixed(2) }m</span> to Infinity sharp.
                          </span>
                      </div>
                      
-                     <div className="col-span-2 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800/50 flex items-center gap-3">
+                     <div className="col-span-2 bg-zinc-900/30 p-4 rounded-xl border border-white/5 flex items-center gap-3">
                          <Ruler className="text-zinc-500" size={20} />
-                         <p className="text-xs text-zinc-400 leading-relaxed">
-                             <strong className="text-zinc-300">Tip:</strong> The <strong>Focus Distance</strong> controls the green zone. The <strong>Subject Position</strong> moves the person. If the person leaves the green zone, they are out of focus.
+                         <p className="text-xs text-zinc-400 leading-relaxed font-light">
+                             <strong className="text-zinc-300 font-medium">Pro Tip:</strong> The <strong>Focus Distance</strong> controls the green zone. The <strong>Subject Position</strong> moves the person. If the person leaves the green zone, they are out of focus.
                          </p>
                      </div>
                 </div>
             </div>
 
             {/* Controls */}
-            <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="bg-zinc-900/80 backdrop-blur-xl p-6 rounded-2xl border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 shadow-xl">
                  <div>
-                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300">
+                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300 uppercase tracking-wider">
                          <span>Focal Length</span>
                          <span className="font-mono text-zinc-400">{focalLength}mm</span>
                      </div>
                      <input type="range" min="16" max="200" value={focalLength} onChange={(e) => setFocalLength(Number(e.target.value))} className="w-full accent-white h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer" />
-                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1">
-                         <span>Wide (16mm)</span>
-                         <span>Telephoto (200mm)</span>
+                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1 font-mono">
+                         <span>16mm</span>
+                         <span>200mm</span>
                      </div>
                  </div>
                  
                  <div>
-                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300">
+                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300 uppercase tracking-wider">
                          <span>Aperture</span>
                          <span className="font-mono text-zinc-400">f/{aperture}</span>
                      </div>
                      <input type="range" min="1.4" max="22" step="0.1" value={aperture} onChange={(e) => setAperture(Number(e.target.value))} className="w-full accent-emerald-500 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer" />
-                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1">
-                         <span>Open (f/1.4)</span>
-                         <span>Closed (f/22)</span>
+                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1 font-mono">
+                         <span>f/1.4</span>
+                         <span>f/22</span>
                      </div>
                  </div>
                  
                  <div>
-                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300">
-                         <span className="flex items-center gap-2"><ScanLine size={14}/> Focus Distance (Lens)</span>
+                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300 uppercase tracking-wider">
+                         <span className="flex items-center gap-2"><ScanLine size={14}/> Focus Distance</span>
                          <span className="font-mono text-zinc-400">{focusDistance}m</span>
                      </div>
                      <input type="range" min="0.5" max="20" step="0.1" value={focusDistance} onChange={(e) => setFocusDistance(Number(e.target.value))} className="w-full accent-blue-500 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer" />
-                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1">
-                         <span>Close (0.5m)</span>
-                         <span>Far (20m)</span>
+                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1 font-mono">
+                         <span>0.5m</span>
+                         <span>20m</span>
                      </div>
                  </div>
 
                  <div>
-                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300">
+                     <div className="flex justify-between mb-3 text-sm font-bold text-zinc-300 uppercase tracking-wider">
                          <span className="flex items-center gap-2"><Users size={14}/> Subject Position</span>
                          <span className="font-mono text-zinc-400">{subjectDistance}m</span>
                      </div>
                      <input type="range" min="0.5" max="20" step="0.1" value={subjectDistance} onChange={(e) => setSubjectDistance(Number(e.target.value))} className="w-full accent-red-500 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer" />
-                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1">
-                         <span>Close (0.5m)</span>
-                         <span>Far (20m)</span>
+                     <div className="flex justify-between text-[10px] text-zinc-600 mt-1 px-1 font-mono">
+                         <span>0.5m</span>
+                         <span>20m</span>
                      </div>
                  </div>
             </div>

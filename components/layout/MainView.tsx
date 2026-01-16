@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Category, Lesson, Mission } from '../../types';
 import { Visualizer } from '../Simulations';
-import { LEARNING_MODULES, GALLERY_COLLECTIONS, APP_TOOLS } from '../../data/content';
+import { LEARNING_MODULES, GALLERY_COLLECTIONS, APP_TOOLS, FUN_FACTS } from '../../data/content';
 import { ASSETS } from '../../data/assets';
 import { SearchResults } from '../../App';
 
@@ -15,6 +15,10 @@ import NdSimulator from '../tools/NdSimulator';
 import RgbCurveSim from '../tools/RgbCurveSim';
 import ZoneSystem from '../tools/ZoneSystem';
 import DiffractionLimit from '../tools/DiffractionLimit';
+import ExposureReflex from '../tools/ExposureReflex';
+import FovComparator from '../tools/FovComparator';
+import EquivalentExposure from '../tools/EquivalentExposure';
+import PerspectiveShift from '../tools/PerspectiveShift';
 import MissionGenerator from '../features/MissionGenerator';
 import PhotoAnalyzer from '../features/PhotoAnalyzer';
 import ConceptLibrary from '../features/ConceptLibrary';
@@ -24,7 +28,7 @@ import {
   Moon, ChevronLeft, ChevronRight, BookOpen, Info, ArrowRight, Play, 
   ScanLine, Sliders, Eye, Aperture, Maximize2, Palette, PenTool, 
   Calculator, Timer, Target, Sparkles, Activity, Layers, Grid, GraduationCap, 
-  Monitor, Search, Bookmark, CheckCircle, Lightbulb
+  Monitor, Search, Bookmark, CheckCircle, Lightbulb, Zap, Smartphone, Lock
 } from 'lucide-react';
 
 const IconMap = {
@@ -34,12 +38,34 @@ const IconMap = {
 
 // Helper for AI Badge
 const AIBadge = () => (
-    <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg z-20 border border-white/20">
+    <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-500/90 to-purple-600/90 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-lg z-20 border border-white/20">
         <Sparkles size={10} className="text-indigo-100" /> AI POWERED
     </div>
 );
 
-type ViewMode = 'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'search' | 'bookmarks';
+// Helper for Random Fact
+const DidYouKnowCard = () => {
+    const [fact, setFact] = useState('');
+    useEffect(() => {
+        setFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
+    }, []);
+
+    return (
+        <div className="mb-12 bg-zinc-900/40 backdrop-blur-md border border-white/5 border-l-4 border-l-amber-500/50 p-6 rounded-r-xl flex items-start gap-4 animate-fade-in hover:bg-zinc-800/40 transition-colors">
+            <div className="bg-amber-500/10 p-3 rounded-full text-amber-500 shrink-0">
+                <Lightbulb size={24} />
+            </div>
+            <div>
+                <h4 className="text-amber-500 font-bold text-xs uppercase tracking-widest mb-2">Did You Know?</h4>
+                <p className="text-zinc-300 text-sm md:text-base leading-relaxed font-light italic">
+                    "{fact}"
+                </p>
+            </div>
+        </div>
+    );
+};
+
+type ViewMode = 'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'exposure-reflex' | 'perspective-shift' | 'eq-exposure' | 'fov-comparator' | 'search' | 'bookmarks';
 
 interface MainViewProps {
     viewMode: ViewMode;
@@ -99,29 +125,46 @@ const MainView: React.FC<MainViewProps> = (props) => {
         }
     }
 
+    // Helper for Tool Cards
+    const ToolCard = ({ id, icon, title, desc, color }: { id: string, icon: React.ReactNode, title: string, desc: string, color: string }) => (
+        <button 
+            onClick={() => onNavigate(id as any)} 
+            className="group bg-zinc-900/60 backdrop-blur-md border border-zinc-800 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800 hover:border-zinc-600 hover:scale-[1.02] active:scale-95"
+        >
+            <div className={`w-12 h-12 bg-zinc-950/80 rounded-xl flex items-center justify-center border border-zinc-800 shadow-inner group-hover:border-${color}-500/30 transition-colors`}>
+                <div className={`text-${color}-400 group-hover:scale-110 transition-transform duration-300`}>
+                    {icon}
+                </div>
+            </div>
+            <div className="text-left">
+                <h4 className="text-white font-bold group-hover:text-white transition-colors">{title}</h4>
+                <p className="text-xs text-zinc-500 group-hover:text-zinc-400">{desc}</p>
+            </div>
+        </button>
+    );
+
     switch (viewMode) {
         case 'home':
             return (
                 <div className="animate-slide-up">
                     <div className="mb-8 md:mb-12 text-center space-y-4 pt-4">
-                        <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
+                        <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 font-serif tracking-tight">
                             Master the Art.
                         </h2>
-                        <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base">
-                            Interactive visualizations, curated galleries, and AI-powered analysis.
+                        <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base leading-relaxed">
+                            Interactive visualizations, curated galleries, and AI-powered analysis to elevate your photography.
                         </p>
                         
                         {/* Subtle Mobile Only Note */}
                         <div className="md:hidden flex items-center justify-center gap-2 mt-6 opacity-60">
                             <Monitor size={12} className="text-zinc-500" />
-                            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Desktop Recommended</span>
+                            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Best on Desktop</span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-12">
                         {LEARNING_MODULES.map((cat) => {
                             const Icon = IconMap[cat.iconName];
-                            // Calculate Category Progress
                             const total = cat.lessons.length;
                             const completed = cat.lessons.filter(l => completedLessons.includes(l.id)).length;
                             const progress = (completed / total) * 100;
@@ -130,24 +173,18 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                 <button
                                     key={cat.id}
                                     onClick={() => onCategorySelect(cat)}
-                                    className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
+                                    className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-500 transition-all duration-500 hover:scale-[1.01] hover:shadow-2xl hover:shadow-indigo-500/10 text-left transform-gpu isolate"
                                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                                 >
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                        style={{ backgroundImage: `url(${cat.backgroundImage})` }}
-                                    />
+                                    <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${cat.backgroundImage})` }} />
                                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-50 mix-blend-multiply transition-opacity`} />
                                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
-                                    {/* Progress Bar (Mini) */}
-                                    {completed > 0 && (
-                                        <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>
-                                    )}
+                                    {completed > 0 && <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>}
 
                                     <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
                                         <div className="flex justify-between items-start">
-                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                            <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-lg">
                                                 <Icon size={20} className="text-white md:w-6 md:h-6" />
                                             </div>
                                             {completed > 0 && (
@@ -156,11 +193,8 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                                 </div>
                                             )}
                                         </div>
-                                        <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">{cat.title}</h3>
-                                        <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
-                                            {cat.subtitle}
-                                        </p>
-
+                                        <h3 className="text-xl md:text-2xl font-bold mb-2 text-white font-serif">{cat.title}</h3>
+                                        <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">{cat.subtitle}</p>
                                         <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                             {cat.lessons.length} Modules <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                         </div>
@@ -170,100 +204,52 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         })}
 
                         {/* CONCEPTS CARD */}
-                        <button
-                            key="concepts-card"
-                            onClick={() => onNavigate('concepts')}
-                            className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
-                            style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-                        >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.concepts})` }}
-                            />
+                        <button onClick={() => onNavigate('concepts')} className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-500 transition-all duration-500 hover:scale-[1.01] text-left transform-gpu isolate" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.concepts})` }} />
                             <div className={`absolute inset-0 bg-gradient-to-br from-indigo-600 to-slate-900 opacity-50 mix-blend-multiply transition-opacity`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-
                             <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
-                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                    <GraduationCap size={20} className="text-white md:w-6 md:h-6" />
-                                </div>
-                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">Concepts & Techniques</h3>
-                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
-                                    Comprehensive Knowledge Base
-                                </p>
-                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
-                                    20+ Topics <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-lg"><GraduationCap size={20} className="text-white md:w-6 md:h-6" /></div>
+                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white font-serif">Concepts & Techniques</h3>
+                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">Comprehensive Knowledge Base</p>
+                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">20+ Topics <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></div>
                             </div>
                         </button>
 
                         {/* GALLERY CARD */}
-                        <button
-                            key="gallery-card"
-                            onClick={() => onNavigate('gallery-menu')}
-                            className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
-                            style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-                        >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.gallery})` }}
-                            />
+                        <button onClick={() => onNavigate('gallery-menu')} className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-500 transition-all duration-500 hover:scale-[1.01] text-left transform-gpu isolate" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.gallery})` }} />
                             <div className={`absolute inset-0 bg-gradient-to-br from-fuchsia-600 to-purple-900 opacity-50 mix-blend-multiply transition-opacity`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-
                             <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
-                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                    <ImageIcon size={20} className="text-white md:w-6 md:h-6" />
-                                </div>
-                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">The Gallery</h3>
-                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
-                                    Curated Examples & Analysis
-                                </p>
-                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
-                                    4 Collections <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-lg"><ImageIcon size={20} className="text-white md:w-6 md:h-6" /></div>
+                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white font-serif">The Gallery</h3>
+                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">Curated Examples & Analysis</p>
+                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">4 Collections <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></div>
                             </div>
                         </button>
                     </div>
 
+                    <DidYouKnowCard />
+
                     {/* PRO TOOLS SECTION */}
                     <div className="mb-6">
-                        <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-white mb-4 px-2 flex items-center gap-2 font-serif tracking-tight">
                             <Sliders size={18} className="text-zinc-400" /> Pro Tools
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <button onClick={() => onNavigate('darkroom')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Aperture className="text-amber-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">Darkroom</h4><p className="text-xs text-zinc-400">Grading Sim</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('chroma-lab')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Palette className="text-fuchsia-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">Chroma Lab</h4><p className="text-xs text-zinc-400">Palette Extractor</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('studio-planner')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><PenTool className="text-emerald-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">Studio Plan</h4><p className="text-xs text-zinc-400">Lighting Setup</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('dof-calc')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Calculator className="text-indigo-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">DoF Visualizer</h4><p className="text-xs text-zinc-400">Focus Calculator</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('nd-sim')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Timer className="text-rose-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">ND Filter Lab</h4><p className="text-xs text-zinc-400">Exposure Calc</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('rgb-curves')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Activity className="text-blue-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">RGB Curve Sim</h4><p className="text-xs text-zinc-400">Color Grading</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('zone-system')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Layers className="text-gray-200" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">Zone System</h4><p className="text-xs text-zinc-400">Exposure Map</p></div>
-                            </button>
-                            <button onClick={() => onNavigate('diffraction')} className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 p-4 rounded-2xl flex items-center gap-4 transition-all hover:bg-zinc-800">
-                                <div className="w-12 h-12 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800"><Grid className="text-teal-400" /></div>
-                                <div className="text-left"><h4 className="text-white font-bold">Diffraction</h4><p className="text-xs text-zinc-400">Sharpness Physics</p></div>
-                            </button>
+                            <ToolCard id="exposure-reflex" icon={<Zap />} title="Exposure Reflex" desc="Arcade Trainer" color="yellow" />
+                            <ToolCard id="perspective-shift" icon={<ScanLine />} title="Perspective Shift" desc="Dolly Zoom Puzzle" color="indigo" />
+                            <ToolCard id="eq-exposure" icon={<Lock />} title="Exposure Locker" desc="Reciprocity Calc" color="emerald" />
+                            <ToolCard id="fov-comparator" icon={<Smartphone />} title="FoV Comparator" desc="Lens & Sensor" color="cyan" />
+                            <ToolCard id="darkroom" icon={<Aperture />} title="Darkroom" desc="Grading Sim" color="amber" />
+                            <ToolCard id="chroma-lab" icon={<Palette />} title="Chroma Lab" desc="Palette Extractor" color="fuchsia" />
+                            <ToolCard id="studio-planner" icon={<PenTool />} title="Studio Plan" desc="Lighting Setup" color="emerald" />
+                            <ToolCard id="dof-calc" icon={<Calculator />} title="DoF Visualizer" desc="Focus Calculator" color="indigo" />
+                            <ToolCard id="nd-sim" icon={<Timer />} title="ND Filter Lab" desc="Exposure Calc" color="rose" />
+                            <ToolCard id="rgb-curves" icon={<Activity />} title="RGB Curve Sim" desc="Color Grading" color="blue" />
+                            <ToolCard id="zone-system" icon={<Layers />} title="Zone System" desc="Exposure Map" color="gray" />
+                            <ToolCard id="diffraction" icon={<Grid />} title="Diffraction" desc="Sharpness Physics" color="teal" />
                         </div>
                     </div>
 
@@ -272,41 +258,25 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         <button
                             key="mission-card"
                             onClick={() => onNavigate('missions')}
-                            className={`group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate
-                    ${activeMission ? 'border-emerald-500/50 hover:border-emerald-400' : 'border-zinc-800 hover:border-zinc-600'}`}
+                            className={`group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border transition-all duration-500 hover:scale-[1.01] text-left transform-gpu isolate
+                    ${activeMission ? 'border-emerald-500/50 hover:border-emerald-400' : 'border-zinc-800 hover:border-zinc-500'}`}
                             style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
                             <AIBadge />
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.missions})` }}
-                            />
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.missions})` }} />
                             <div className={`absolute inset-0 opacity-60 mix-blend-multiply transition-opacity ${activeMission ? 'bg-gradient-to-br from-emerald-800 to-slate-900' : 'bg-gradient-to-br from-emerald-600 to-slate-900'}`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
                             <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
                                 <div className="flex justify-between items-start mb-6">
-                                    <div className={`w-12 h-12 rounded-2xl backdrop-blur-md flex items-center justify-center transition-transform duration-300 border shadow-lg ${activeMission ? 'bg-emerald-500/20 border-emerald-400/30' : 'bg-white/10 border-white/10 group-hover:-translate-y-2'}`}>
+                                    <div className={`w-12 h-12 rounded-2xl backdrop-blur-xl border border-white/10 flex items-center justify-center transition-transform duration-300 shadow-lg ${activeMission ? 'bg-emerald-500/20 border-emerald-400/30' : 'bg-white/10 group-hover:-translate-y-2'}`}>
                                         <Target size={24} className={activeMission ? 'text-emerald-400' : 'text-white'} />
                                     </div>
-                                    {activeMission && (
-                                        <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse">
-                                            Active Assignment
-                                        </span>
-                                    )}
+                                    {activeMission && <span className="px-3 py-1 bg-emerald-500/20 backdrop-blur-md text-emerald-400 border border-emerald-500/30 rounded-full text-[10px] font-bold uppercase tracking-wider animate-pulse">Active Assignment</span>}
                                 </div>
-
-                                <h3 className="text-2xl font-bold mb-2 text-white">Creative Missions</h3>
-                                <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
-                                    {activeMission ? (
-                                        <>Current Objective: <span className="text-emerald-300">{activeMission.subject}</span></>
-                                    ) : (
-                                        'Randomized photography challenges to test your skills.'
-                                    )}
-                                </p>
-                                <div className={`mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors ${activeMission ? 'text-emerald-400' : 'text-zinc-400 group-hover:text-white'}`}>
-                                    {activeMission ? 'Resume Mission' : 'Generate Mission'} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                <h3 className="text-2xl font-bold mb-2 text-white font-serif">Creative Missions</h3>
+                                <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">{activeMission ? <>Current Objective: <span className="text-emerald-300">{activeMission.subject}</span></> : 'Randomized photography challenges to test your skills.'}</p>
+                                <div className={`mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors ${activeMission ? 'text-emerald-400' : 'text-zinc-400 group-hover:text-white'}`}>{activeMission ? 'Resume Mission' : 'Generate Mission'} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></div>
                             </div>
                         </button>
 
@@ -314,30 +284,19 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         <button
                             key="critique-card"
                             onClick={() => onNavigate('critique')}
-                            className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
+                            className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-500 transition-all duration-500 hover:scale-[1.01] text-left transform-gpu isolate"
                             style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
                             <AIBadge />
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.critique})` }}
-                            />
+                            <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${ASSETS.BACKGROUNDS.critique})` }} />
                             <div className={`absolute inset-0 bg-gradient-to-br from-cyan-600 to-slate-900 opacity-60 mix-blend-multiply transition-opacity`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
-
-                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                                <ScanLine className="text-cyan-400/20 w-64 h-64 animate-pulse" />
-                            </div>
-
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"><ScanLine className="text-cyan-400/20 w-64 h-64 animate-pulse" /></div>
                             <div className="absolute bottom-0 left-0 p-8 w-full relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
                                 <div>
-                                    <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                        <ScanLine size={24} className="text-white" />
-                                    </div>
-                                    <h3 className="text-2xl font-bold mb-2 text-white">AI Photo Critic</h3>
-                                    <p className="text-zinc-300 text-sm group-hover:text-white transition-colors max-w-sm">
-                                        Upload your photo for instant feedback on composition, exposure, and technique.
-                                    </p>
+                                    <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-lg"><ScanLine size={24} className="text-white" /></div>
+                                    <h3 className="text-2xl font-bold mb-2 text-white font-serif">AI Photo Critic</h3>
+                                    <p className="text-zinc-300 text-sm group-hover:text-white transition-colors max-w-sm">Upload your photo for instant feedback on composition, exposure, and technique.</p>
                                 </div>
                             </div>
                         </button>
@@ -354,6 +313,10 @@ const MainView: React.FC<MainViewProps> = (props) => {
         case 'rgb-curves': return <RgbCurveSim />;
         case 'zone-system': return <ZoneSystem />;
         case 'diffraction': return <DiffractionLimit />;
+        case 'exposure-reflex': return <ExposureReflex />;
+        case 'eq-exposure': return <EquivalentExposure />;
+        case 'perspective-shift': return <PerspectiveShift />;
+        case 'fov-comparator': return <FovComparator />;
         case 'critique': return (
             <div className="animate-fade-in">
                 <PhotoAnalyzer
@@ -403,7 +366,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                     <button
                                         key={topic}
                                         onClick={() => handleConceptSelect(topic)}
-                                        className="bg-zinc-900/50 border border-zinc-800 hover:bg-zinc-900 hover:border-emerald-500/50 p-3 rounded-lg text-sm text-zinc-300 hover:text-white transition-all text-left flex items-center justify-between group"
+                                        className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 hover:bg-zinc-900/80 hover:border-emerald-500/50 p-3 rounded-lg text-sm text-zinc-300 hover:text-white transition-all text-left flex items-center justify-between group"
                                     >
                                         {topic}
                                         <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0" />
@@ -490,7 +453,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
         case 'gallery-menu': return (
             <div className="animate-slide-right">
                 <div className="mb-8">
-                    <h2 className="text-3xl font-bold text-white mb-2">Curated Collections</h2>
+                    <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Curated Collections</h2>
                     <p className="text-zinc-400">Select a genre to explore professional examples.</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -505,23 +468,18 @@ const MainView: React.FC<MainViewProps> = (props) => {
                             <button
                                 key={cat.id}
                                 onClick={() => onCategorySelect(cat)}
-                                className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-600 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left transform-gpu isolate"
+                                className="group relative overflow-hidden rounded-3xl bg-zinc-900 aspect-[4/3] md:aspect-[16/9] border border-zinc-800 hover:border-zinc-500 transition-all duration-500 hover:scale-[1.01] hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10 text-left transform-gpu isolate"
                                 style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                             >
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60"
-                                    style={{ backgroundImage: `url(${cat.backgroundImage})` }}
-                                />
+                                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" style={{ backgroundImage: `url(${cat.backgroundImage})` }} />
                                 <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-50 mix-blend-multiply transition-opacity`} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
-                                {completed > 0 && (
-                                    <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>
-                                )}
+                                {completed > 0 && <div className="absolute top-0 left-0 h-1 bg-emerald-500 z-20 transition-all duration-1000" style={{ width: `${progress}%` }}></div>}
 
                                 <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
                                     <div className="flex justify-between items-start">
-                                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 shadow-lg">
                                             <Icon size={24} className="text-white" />
                                         </div>
                                         {completed > 0 && (
@@ -530,10 +488,8 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="text-2xl font-bold mb-2 text-white">{cat.title}</h3>
-                                    <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
-                                        {cat.subtitle}
-                                    </p>
+                                    <h3 className="text-2xl font-bold mb-2 text-white font-serif">{cat.title}</h3>
+                                    <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">{cat.subtitle}</p>
                                     <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                         {cat.lessons.length} Examples <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                     </div>
@@ -560,7 +516,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         />
                         <div className={`absolute inset-0 bg-gradient-to-br ${activeCategory.gradient} opacity-90 mix-blend-multiply`} />
                         <div className="relative z-10 text-center">
-                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">{activeCategory.title}</h2>
+                            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 font-serif">{activeCategory.title}</h2>
                             <p className="text-zinc-200 max-w-xl mx-auto text-lg">{activeCategory.subtitle}</p>
                             
                             {/* Progress Bar */}
@@ -674,7 +630,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                 <div className="w-full xl:w-1/3 space-y-6">
                                     <div>
                                         <div className="flex items-center gap-2 text-zinc-500 text-xs font-bold uppercase tracking-widest mb-2"><BookOpen size={14} /> Concept</div>
-                                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{activeLesson.title}</h2>
+                                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 font-serif">{activeLesson.title}</h2>
                                         <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed">{activeLesson.longDescription}</p>
                                     </div>
                                     <div className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/50">

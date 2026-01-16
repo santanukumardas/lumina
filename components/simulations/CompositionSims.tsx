@@ -64,7 +64,7 @@ export const SymmetrySim: React.FC = () => {
              </div>
         </div>
   
-        <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex items-center justify-center gap-4">
+        <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 flex items-center justify-center gap-4">
             <button 
                 onClick={() => setMode('natural')}
                 className={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${mode === 'natural' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
@@ -141,7 +141,7 @@ export const FramingSim: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex justify-between items-center">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 flex justify-between items-center">
                  <span className="text-zinc-500 text-sm">Flat Image</span>
                  <button 
                     onClick={() => setHasFrame(!hasFrame)}
@@ -178,8 +178,8 @@ export const NegativeSpaceSim: React.FC = () => {
                  </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span>Small Subject (Vast Space)</span>
                     <span>Tight Crop (Crowded)</span>
                 </div>
@@ -232,8 +232,8 @@ export const BalanceSim: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span>Left Heavy</span>
                     <span>Balanced</span>
                     <span>Right Heavy</span>
@@ -280,14 +280,14 @@ export const DutchAngleSim: React.FC = () => {
                      <div className="absolute left-1/2 top-0 h-full w-0.5 bg-white/20"></div>
                  </div>
 
-                <div className="absolute bottom-6 left-6 text-white font-bold text-4xl drop-shadow-lg opacity-80 mix-blend-overlay">
+                <div className="absolute bottom-6 left-6 text-white font-bold text-4xl drop-shadow-lg opacity-80 mix-blend-overlay font-serif italic">
                     {angle !== 0 ? 'DYNAMIC' : 'STATIC'}
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
                 <div className="flex items-center justify-between mb-4">
-                     <div className="flex justify-between w-full text-sm font-medium text-zinc-400">
+                     <div className="flex justify-between w-full text-sm font-medium text-zinc-400 font-mono">
                         <span>-25°</span>
                         <span>0°</span>
                         <span>+25°</span>
@@ -343,8 +343,8 @@ export const KeystoningSim: React.FC = () => {
                 </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
-                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
+                <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                     <span>Distorted (Looking Up)</span>
                     <span>Corrected (Parallel)</span>
                 </div>

@@ -119,21 +119,21 @@ const ZoneSystem: React.FC = () => {
     return (
         <div className="max-w-7xl mx-auto p-4 animate-slide-up">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Zone System Mapper</h2>
+                <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Zone System Mapper</h2>
                 <p className="text-zinc-400">Visualize exposure zones to master dynamic range (Ansel Adams method).</p>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Visualizer */}
                 <div className="flex-1">
-                    <div className="relative bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl aspect-[4/3] flex items-center justify-center">
+                    <div className="relative bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl aspect-[4/3] flex items-center justify-center group">
                          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full object-contain z-10" />
                          <canvas ref={overlayRef} className="absolute inset-0 w-full h-full object-contain z-20 mix-blend-screen pointer-events-none" />
                          
                          <div className="absolute top-4 right-4 z-30 flex gap-2">
                              <button 
                                 onClick={() => setShowFalseColor(!showFalseColor)}
-                                className={`p-2 rounded-lg backdrop-blur-md border transition-all flex items-center gap-2 text-xs font-bold ${showFalseColor ? 'bg-indigo-500/80 text-white border-indigo-400' : 'bg-black/60 text-zinc-300 border-white/10'}`}
+                                className={`p-2 rounded-lg backdrop-blur-md border transition-all flex items-center gap-2 text-xs font-bold ${showFalseColor ? 'bg-indigo-500/80 text-white border-indigo-400' : 'bg-black/60 text-zinc-300 border-white/10 hover:bg-black/80'}`}
                              >
                                  <Layers size={16} /> False Color
                              </button>
@@ -151,10 +151,10 @@ const ZoneSystem: React.FC = () => {
                 {/* Controls */}
                 <div className="lg:w-96 flex flex-col gap-4">
                      {/* Info Box */}
-                     <div className="bg-zinc-900/80 p-6 rounded-2xl border border-zinc-800">
+                     <div className="bg-zinc-900/60 backdrop-blur-md p-6 rounded-2xl border border-white/5">
                          {showFalseColor ? (
                             <div className="space-y-2">
-                                <h3 className="text-white font-bold flex items-center gap-2"><Layers size={18}/> False Color Map</h3>
+                                <h3 className="text-white font-bold flex items-center gap-2 font-serif tracking-wide"><Layers size={18}/> False Color Map</h3>
                                 <p className="text-xs text-zinc-400">
                                     This mode (often used in cinema cameras) maps every luminosity value to a specific color, allowing you to instantly see exposure ratios across the entire frame.
                                 </p>
@@ -168,7 +168,7 @@ const ZoneSystem: React.FC = () => {
                          ) : activeZone !== null ? (
                              <div className="space-y-2 animate-fade-in">
                                  <div className="flex justify-between items-start">
-                                    <h3 className="text-2xl font-bold text-white">Zone {ZONES[activeZone].label}</h3>
+                                    <h3 className="text-2xl font-bold text-white font-serif tracking-wide">Zone {ZONES[activeZone].label}</h3>
                                     <span className="px-2 py-1 bg-zinc-800 rounded text-xs text-zinc-400 font-mono">Lum: {ZONES[activeZone].range.join('-')}</span>
                                  </div>
                                  <h4 className="text-emerald-400 font-bold text-sm uppercase tracking-wide">{ZONES[activeZone].name}</h4>
@@ -185,7 +185,7 @@ const ZoneSystem: React.FC = () => {
                      </div>
 
                      {/* Zone Selector */}
-                     <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                     <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/5">
                          <div className="flex justify-between items-center mb-4">
                              <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Zone Scale</span>
                              <button onClick={() => { setActiveZone(null); setShowFalseColor(false); }} className="text-[10px] text-zinc-400 hover:text-white underline">Clear</button>
@@ -195,7 +195,7 @@ const ZoneSystem: React.FC = () => {
                                  <button
                                     key={zone.id}
                                     onClick={() => { setActiveZone(zone.id); setShowFalseColor(false); }}
-                                    className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left group ${activeZone === zone.id && !showFalseColor ? 'bg-zinc-800 ring-1 ring-fuchsia-500' : 'hover:bg-zinc-800'}`}
+                                    className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left group ${activeZone === zone.id && !showFalseColor ? 'bg-zinc-800 ring-1 ring-fuchsia-500' : 'hover:bg-zinc-800/50'}`}
                                  >
                                      <div 
                                         className="w-8 h-8 rounded border border-zinc-700 shrink-0"

@@ -307,6 +307,10 @@ export const GALLERY_COLLECTIONS: Category[] = [
 ];
 
 export const APP_TOOLS = [
+    { id: 'exposure-reflex', title: 'Exposure Reflex', description: 'Exposure Training Game' },
+    { id: 'perspective-shift', title: 'Perspective Shift', description: 'Dolly Zoom Puzzle' },
+    { id: 'eq-exposure', title: 'Exposure Locker', description: 'Reciprocity Calculator' },
+    { id: 'fov-comparator', title: 'FoV Comparator', description: 'Lens & Sensor Visualizer' },
     { id: 'darkroom', title: 'Darkroom', description: 'Color Grading & Exposure' },
     { id: 'chroma-lab', title: 'Chroma Lab', description: 'Palette Generator' },
     { id: 'studio-planner', title: 'Studio Planner', description: 'Lighting Diagram Builder' },
@@ -329,7 +333,7 @@ export const TOPICS = [
     "Keystoning", "Leading Lines", "Long Exposure", "Low Key", 
     "Macro Photography", "Metering Modes", "Monochrome", "Motion Blur", 
     "Negative Space", "ND Filters", "Panning", "Pixel Pitch", 
-    "Rembrandt Lighting", "Rim Light", "RGB Curves", "Rule of Thirds", 
+    "Reciprocity", "Rembrandt Lighting", "Rim Light", "RGB Curves", "Rule of Thirds", 
     "Sensor Size", "Shadows & Highlights", "Sharpening", "Shutter Speed", 
     "Silhouette", "Split Toning", "Symmetry", "Three-Point Lighting", 
     "Tone Curve", "Vignette", "Visual Weight", "White Balance", "Zone System"
@@ -379,7 +383,7 @@ export const OFFLINE_KNOWLEDGE: Record<string, ConceptData> = {
         definition: "The optical effect where background elements appear larger and closer to the subject.",
         howItWorks: "Achieved by standing further away and using a long focal length lens.",
         creativeUse: "Make a distant mountain look massive behind your subject.",
-        tool: "Focal Length Simulator", toolTip: "Set to 200mm to see the background enlarge."
+        tool: "Perspective Shift", toolTip: "Match the Dolly Zoom targets."
     },
     "Histogram": { 
         definition: "A graph showing the distribution of light tones in an image.", 
@@ -391,7 +395,13 @@ export const OFFLINE_KNOWLEDGE: Record<string, ConceptData> = {
         definition: "The balance between Aperture, Shutter Speed, and ISO.",
         howItWorks: "Changing one setting requires adjusting another to maintain the same brightness.",
         creativeUse: "Trade ISO for Shutter Speed to get a cleaner shot if you have a tripod.",
-        tool: "Exposure Simulators", toolTip: "Check Aperture, Shutter, and ISO tools."
+        tool: "Exposure Reflex", toolTip: "Play the game to build muscle memory."
+    },
+    "Reciprocity": {
+        definition: "The inverse relationship between intensity and duration of light.",
+        howItWorks: "Aperture area and shutter duration can be traded to keep exposure constant.",
+        creativeUse: "Lock your exposure and slow your shutter to blur water without brightening the image.",
+        tool: "Exposure Locker", toolTip: "Lock EV and adjust Shutter Speed."
     },
     "Metering Modes": { 
         definition: "How the camera measures light to determine exposure.", 
@@ -547,7 +557,7 @@ export const OFFLINE_KNOWLEDGE: Record<string, ConceptData> = {
         definition: "The magnification effect of using a smaller sensor.", 
         howItWorks: "A 50mm lens on an APS-C (1.5x) sensor behaves like a 75mm lens.",
         creativeUse: "Advantageous for bird photography as it extends lens reach.",
-        tool: "Sensor Size Simulator", toolTip: "Observe the framing change."
+        tool: "FoV Comparator", toolTip: "Observe the framing change."
     },
     "Pixel Pitch": {
         definition: "The distance between the center of one pixel to the next on a sensor.",
@@ -734,6 +744,424 @@ export const OFFLINE_KNOWLEDGE: Record<string, ConceptData> = {
         howItWorks: "Roads, fences, or shadows act as arrows.",
         creativeUse: "Create strong depth and visual flow.",
         tool: "Composition Simulators", toolTip: "Use perspective lines."
+    }
+};
+
+export const FUN_FACTS = [
+    "The first digital camera was invented by Kodak in 1975. It weighed 8 pounds and took 23 seconds to record a 0.01 megapixel image.",
+    "The most expensive photograph ever sold is 'Le Violon d'Ingres' by Man Ray, fetching $12.4 million in 2022.",
+    "The 'Golden Hour' isn't always an hour. Near the equator, it might only last 20 minutes, while in Scandinavia, it can last all night in summer.",
+    "The term 'megapixel' stands for one million pixels. A 24MP camera captures 24 million distinct points of data.",
+    "Early flash powder (magnesium) was explosive and dangerous. Photographers were occasionally injured when taking indoor shots.",
+    "The first color photograph was taken in 1861 by James Clerk Maxwell, projecting three black-and-white slides through red, green, and blue filters.",
+    "The 'Daguerreotype' was the first commercially successful photographic process, introduced in 1839. It created a unique image on silver-plated copper.",
+    "The longest exposure ever taken is currently ongoing. The Millennium Camera in Tucson, Arizona is set to expose for 1,000 years (2023-3023).",
+    "Kodachrome film was so complex to develop that only a few labs in the world could process it. It was discontinued in 2009.",
+    "The human eye has a dynamic range of about 20-24 stops, while the best modern cameras capture around 14-15 stops.",
+    "In cinema, the 'shutter angle' is used instead of shutter speed. A 180-degree shutter is standard for natural motion blur.",
+    "Ansel Adams developed the 'Zone System' to translate perceived light into specific print densities, giving him ultimate control over contrast.",
+    "The 'Leica' brand name comes from 'Leitz Camera'. Oskar Barnack invented the 35mm format we still use today to test cinema film stock.",
+    "The world's largest camera lens was built in 2006. It weighed 564 pounds and was designed for a wildlife photographer.",
+    "Before digital sensors, ISO was called ASA (American Standards Association). The scale numbers (100, 200, 400) remained the same."
+];
+
+export interface QuizQuestion {
+    question: string;
+    options: string[];
+    correctIndex: number;
+    explanation: string;
+}
+
+export const CONCEPT_QUIZZES: Record<string, QuizQuestion> = {
+    "Aperture": {
+        question: "Which f-stop setting will let in the MOST light?",
+        options: ["f/1.4", "f/8", "f/22"],
+        correctIndex: 0,
+        explanation: "Lower f-numbers represent wider openings. f/1.4 is a very wide aperture."
+    },
+    "Shutter Speed": {
+        question: "Which shutter speed is best for freezing a fast-moving car?",
+        options: ["1/30 sec", "1/1000 sec", "1 sec"],
+        correctIndex: 1,
+        explanation: "1/1000s is very fast, allowing the sensor to capture a split second without blur."
+    },
+    "ISO": {
+        question: "What is the main side effect of raising your ISO too high?",
+        options: ["Motion Blur", "Digital Noise (Grain)", "Darker Image"],
+        correctIndex: 1,
+        explanation: "Amplifying the sensor signal introduces static-like digital noise."
+    },
+    "Depth of Field": {
+        question: "Which factor does NOT affect Depth of Field?",
+        options: ["Aperture", "Focal Length", "Shutter Speed"],
+        correctIndex: 2,
+        explanation: "Shutter speed controls motion blur and exposure time, but has no effect on focus depth."
+    },
+    "Golden Hour": {
+        question: "When does the Golden Hour occur?",
+        options: ["At noon", "Just after sunrise / before sunset", "Midnight"],
+        correctIndex: 1,
+        explanation: "It creates soft, warm light when the sun is low on the horizon."
+    },
+    "Rule of Thirds": {
+        question: "Where should you place your subject for a 'Rule of Thirds' composition?",
+        options: ["Dead center", "On the intersections of the 3x3 grid", "In the bottom corner"],
+        correctIndex: 1,
+        explanation: "Placing subjects off-center on these intersections creates visual tension and interest."
+    },
+    "White Balance": {
+        question: "If your photo looks too blue (cool), what should you do?",
+        options: ["Lower the Kelvin (e.g. 3000K)", "Raise the Kelvin (e.g. 7000K)", "Decrease ISO"],
+        correctIndex: 1,
+        explanation: "Raising the Kelvin value adds warmth (orange) to counteract the blue."
+    },
+    "Histogram": {
+        question: "If the histogram graph is bunched up against the right side, the image is...",
+        options: ["Underexposed (Too Dark)", "Overexposed (Too Bright)", "Perfectly Balanced"],
+        correctIndex: 1,
+        explanation: "The right side represents highlights. Hitting the wall means 'clipping' whites."
+    },
+    "Bokeh": {
+        question: "How do you achieve maximum Bokeh (background blur)?",
+        options: ["Use f/22 and stand far away", "Use f/1.8 and get close to subject", "Use a wide angle lens"],
+        correctIndex: 1,
+        explanation: "Wide aperture (low f-stop) + close focus distance = shallowest depth of field."
+    },
+    "Focal Length": {
+        question: "Which lens type 'compresses' the background, making it look closer?",
+        options: ["Wide Angle (16mm)", "Standard (50mm)", "Telephoto (200mm)"],
+        correctIndex: 2,
+        explanation: "Telephoto lenses narrow the field of view, creating a compression effect."
+    },
+    "Airy Disk": {
+        question: "The Airy Disk is related to which optical phenomenon?",
+        options: ["Distortion", "Diffraction", "Vignetting"],
+        correctIndex: 1,
+        explanation: "As the aperture closes, light waves interfere, spreading point sources into disks."
+    },
+    "Astrophotography": {
+        question: "What is crucial for capturing stars without trails?",
+        options: ["Fast shutter speed", "Rule of 500", "Small aperture"],
+        correctIndex: 1,
+        explanation: "The Rule of 500 helps calculate the max exposure time before earth's rotation causes trails."
+    },
+    "Blue Hour": {
+        question: "What lighting characteristic defines the Blue Hour?",
+        options: ["High contrast shadows", "Deep blue sky with warm artificial lights", "Golden sunlight"],
+        correctIndex: 1,
+        explanation: "Occurs just before sunrise or after sunset, providing a cool ambient light."
+    },
+    "Chromatic Aberration": {
+        question: "What does Chromatic Aberration look like?",
+        options: ["Dark corners", "Color fringing (purple/green) on edges", "Blurry center"],
+        correctIndex: 1,
+        explanation: "It happens when a lens fails to focus all colors to the same convergence point."
+    },
+    "Clarity": {
+        question: "Which part of the image does the 'Clarity' slider primarily affect?",
+        options: ["Overall brightness", "Midtone contrast", "Color saturation"],
+        correctIndex: 1,
+        explanation: "Clarity adds punch to textures by boosting contrast in the midtones."
+    },
+    "Color Grading": {
+        question: "What is the main purpose of Color Grading?",
+        options: ["Correcting white balance", "Stylizing the image for mood", "Removing noise"],
+        correctIndex: 1,
+        explanation: "Unlike color correction (fixing), grading is a creative choice to convey emotion."
+    },
+    "Color Harmony": {
+        question: "Which color scheme uses colors opposite each other on the wheel?",
+        options: ["Analogous", "Monochromatic", "Complementary"],
+        correctIndex: 2,
+        explanation: "Complementary colors (like Blue/Orange) create high contrast and vibrancy."
+    },
+    "Color Temperature": {
+        question: "A low Kelvin value (e.g., 2500K) represents what color of light?",
+        options: ["Blue (Cool)", "White (Neutral)", "Orange (Warm)"],
+        correctIndex: 2,
+        explanation: "Lower Kelvin values correspond to warm light sources like candles or tungsten bulbs."
+    },
+    "Compression (Lens)": {
+        question: "How does a telephoto lens affect the relationship between subject and background?",
+        options: ["Separates them further", "Makes them appear closer together", "Distorts the edges"],
+        correctIndex: 1,
+        explanation: "Telephoto lenses 'flatten' the image, making distant objects appear larger relative to the foreground."
+    },
+    "Contrast": {
+        question: "A 'Low Key' image is characterized by:",
+        options: ["High brightness", "Dominance of shadows and high contrast", "Low contrast gray tones"],
+        correctIndex: 1,
+        explanation: "Low Key lighting uses shadow and contrast to create drama."
+    },
+    "Crop Factor": {
+        question: "If you put a 50mm lens on a 1.5x crop sensor, what is the effective focal length?",
+        options: ["35mm", "50mm", "75mm"],
+        correctIndex: 2,
+        explanation: "50mm x 1.5 = 75mm equivalent field of view."
+    },
+    "Diffraction": {
+        question: "At which aperture setting is diffraction most likely to soften your image?",
+        options: ["f/5.6", "f/11", "f/22"],
+        correctIndex: 2,
+        explanation: "Very small apertures (high f-numbers) cause light waves to bend and interfere, reducing sharpness."
+    },
+    "Dutch Angle": {
+        question: "What emotion does a Dutch Angle typically convey?",
+        options: ["Stability", "Peace", "Unease or Tension"],
+        correctIndex: 2,
+        explanation: "Tilting the horizon creates a sense of disorientation or dynamic action."
+    },
+    "Dynamic Range": {
+        question: "When a sensor 'clips' the highlights, what happens?",
+        options: ["Colors become saturated", "Detail is lost to pure white", "The image becomes noisy"],
+        correctIndex: 1,
+        explanation: "Clipping means the data has exceeded the maximum brightness value the sensor can record."
+    },
+    "Exposure Triangle": {
+        question: "If you increase Shutter Speed (make it faster), what must you do to maintain exposure?",
+        options: ["Close Aperture or Lower ISO", "Open Aperture or Raise ISO", "Change White Balance"],
+        correctIndex: 1,
+        explanation: "A faster shutter lets in less light, so you must compensate by letting in more (Aperture) or boosting sensitivity (ISO)."
+    },
+    "False Color": {
+        question: "What is False Color used for in video/cinema?",
+        options: ["Creative filters", "Checking exposure levels accurately", "Focus assistance"],
+        correctIndex: 1,
+        explanation: "It maps luminance values to colors (e.g., pink for skin tone) to verify exposure objectively."
+    },
+    "Fill Light": {
+        question: "Where is the Fill Light typically placed?",
+        options: ["Behind the subject", "Opposite the Key Light", "Directly above"],
+        correctIndex: 1,
+        explanation: "It fills in the shadows created by the Key Light."
+    },
+    "Film Grain": {
+        question: "Why might a photographer add grain to a digital photo?",
+        options: ["To increase sharpness", "To simulate a vintage/analog aesthetic", "To fix color issues"],
+        correctIndex: 1,
+        explanation: "Grain adds texture and can make an image feel more organic or timeless."
+    },
+    "Flash Sync": {
+        question: "What happens if you use a shutter speed faster than your camera's Sync Speed?",
+        options: ["The photo is overexposed", "A black band appears on the image", "The flash won't fire"],
+        correctIndex: 1,
+        explanation: "The shutter curtain will start closing before the flash finishes, blocking part of the sensor."
+    },
+    "Flat Lay": {
+        question: "What camera angle is used for a Flat Lay?",
+        options: ["45 degrees", "Eye level", "90 degrees (Top Down)"],
+        correctIndex: 2,
+        explanation: "Flat lays are shot directly from above to eliminate depth perspective."
+    },
+    "Focus Peaking": {
+        question: "How does Focus Peaking help you?",
+        options: ["It automatically focuses the lens", "It highlights in-focus edges with color", "It brightens the image"],
+        correctIndex: 1,
+        explanation: "It visualizes the plane of focus by detecting high contrast edges."
+    },
+    "Framing": {
+        question: "What is the purpose of 'Framing within a frame'?",
+        options: ["To block the light", "To direct the viewer's eye to the subject", "To blur the background"],
+        correctIndex: 1,
+        explanation: "Using foreground elements to frame the subject adds depth and focus."
+    },
+    "Gobos": {
+        question: "What does a Gobo do?",
+        options: ["Reflects light", "Blocks light to create shadows/patterns", "Diffuses light"],
+        correctIndex: 1,
+        explanation: "Go-Betweens are placed between light and subject to cast creative shadows."
+    },
+    "High Key": {
+        question: "High Key photography creates what kind of mood?",
+        options: ["Moody and dark", "Light, airy, and optimistic", "Gritty and textured"],
+        correctIndex: 1,
+        explanation: "It uses bright tones and low contrast."
+    },
+    "HSL": {
+        question: "To turn a blue sky teal, which HSL slider would you adjust?",
+        options: ["Hue", "Saturation", "Luminance"],
+        correctIndex: 0,
+        explanation: "Changing the Hue of the Blue channel shifts the color itself."
+    },
+    "Hyperfocal Distance": {
+        question: "Focusing at the Hyperfocal Distance ensures:",
+        options: ["Maximum background blur", "Maximum depth of field (sharpness from near to infinity)", "Sharpest possible subject"],
+        correctIndex: 1,
+        explanation: "It is the specific focus point that maximizes the acceptable sharp range."
+    },
+    "Inverse Square Law": {
+        question: "If you move a light source 2x further away, how much intensity remains?",
+        options: ["50% (1/2)", "25% (1/4)", "10% (1/10)"],
+        correctIndex: 1,
+        explanation: "Intensity is inversely proportional to the square of the distance (1/2² = 1/4)."
+    },
+    "Key Light": {
+        question: "In a standard setup, the Key Light is:",
+        options: ["The brightest/main light", "The backlight", "The background light"],
+        correctIndex: 0,
+        explanation: "It provides the primary illumination and defines shadows."
+    },
+    "Keystoning": {
+        question: "What causes vertical lines in buildings to look like they are falling backwards?",
+        options: ["Wide aperture", "Tilting the camera upwards", "Slow shutter speed"],
+        correctIndex: 1,
+        explanation: "Perspective distortion occurs when the sensor plane is not parallel to the subject."
+    },
+    "Leading Lines": {
+        question: "The primary goal of Leading Lines is to:",
+        options: ["Divide the frame", "Guide the viewer's eye towards the subject", "Create symmetry"],
+        correctIndex: 1,
+        explanation: "Lines like roads or fences act as visual arrows pointing to the focal point."
+    },
+    "Long Exposure": {
+        question: "Which filter is often needed for Long Exposures during the day?",
+        options: ["UV Filter", "Polarizer", "ND (Neutral Density) Filter"],
+        correctIndex: 2,
+        explanation: "An ND filter blocks light, allowing you to keep the shutter open longer without overexposure."
+    },
+    "Low Key": {
+        question: "Low Key lighting emphasizes:",
+        options: ["Bright colors", "Shadows and contours", "Even illumination"],
+        correctIndex: 1,
+        explanation: "It uses darkness to reveal form and create mood."
+    },
+    "Macro Photography": {
+        question: "A true Macro lens creates a magnification ratio of at least:",
+        options: ["1:1", "1:2", "1:10"],
+        correctIndex: 0,
+        explanation: "The subject appears life-size on the image sensor."
+    },
+    "Metering Modes": {
+        question: "Spot Metering measures light from:",
+        options: ["The entire frame average", "The center and surrounding area", "A single small point"],
+        correctIndex: 2,
+        explanation: "It allows for precise exposure of a specific part of the scene, ignoring the rest."
+    },
+    "Monochrome": {
+        question: "What becomes more important when color is removed (B&W)?",
+        options: ["White Balance", "Texture, Tonal Contrast, and Form", "Saturation"],
+        correctIndex: 1,
+        explanation: "Without color contrast, the image relies on light/dark contrast and structure."
+    },
+    "Motion Blur": {
+        question: "Motion blur is caused by:",
+        options: ["Subject movement during exposure", "Missed focus", "Low ISO"],
+        correctIndex: 0,
+        explanation: "If the subject moves while the shutter is open, it records as a streak."
+    },
+    "Negative Space": {
+        question: "Using lots of negative space creates a sense of:",
+        options: ["Chaos", "Isolation or Minimalism", "Action"],
+        correctIndex: 1,
+        explanation: "Empty space emphasizes the subject by giving the eye nowhere else to look."
+    },
+    "ND Filters": {
+        question: "An ND Filter affects the image by:",
+        options: ["Changing colors", "Reducing light intensity", "Softening focus"],
+        correctIndex: 1,
+        explanation: "It acts like sunglasses for the lens, reducing exposure without altering color."
+    },
+    "Panning": {
+        question: "When panning, you should:",
+        options: ["Hold the camera still", "Move the camera at the same speed as the subject", "Move opposite to the subject"],
+        correctIndex: 1,
+        explanation: "Matching speed keeps the subject sharp while the background blurs."
+    },
+    "Pixel Pitch": {
+        question: "Larger Pixel Pitch typically results in:",
+        options: ["Higher resolution", "Better low-light performance", "More noise"],
+        correctIndex: 1,
+        explanation: "Larger pixels can gather more photons, improving signal-to-noise ratio."
+    },
+    "Reciprocity": {
+        question: "The Law of Reciprocity states that Exposure = Intensity x _____",
+        options: ["Distance", "Time", "ISO"],
+        correctIndex: 1,
+        explanation: "Total exposure depends on how bright the light is and how long it hits the sensor."
+    },
+    "Rembrandt Lighting": {
+        question: "The signature of Rembrandt lighting is:",
+        options: ["Flat, even light", "A triangle of light on the shadowed cheek", "Silhouette"],
+        correctIndex: 1,
+        explanation: "It mimics the style of the painter Rembrandt, creating depth and drama."
+    },
+    "Rim Light": {
+        question: "Rim lighting helps to:",
+        options: ["Separate the subject from the background", "Fill in shadows", "Color balance the scene"],
+        correctIndex: 0,
+        explanation: "It creates a highlight outline around the subject."
+    },
+    "RGB Curves": {
+        question: "Raising the Red curve in the shadows adds Red. Lowering it adds:",
+        options: ["Green", "Blue", "Cyan"],
+        correctIndex: 2,
+        explanation: "The opposite of Red on the digital color wheel is Cyan."
+    },
+    "Sensor Size": {
+        question: "Which sensor size generally offers the shallowest Depth of Field (at same framing)?",
+        options: ["Micro 4/3", "APS-C", "Full Frame"],
+        correctIndex: 2,
+        explanation: "Larger sensors require longer focal lengths or closer distances for the same framing, reducing DoF."
+    },
+    "Shadows & Highlights": {
+        question: "In digital photography, it is usually harder to recover detail from:",
+        options: ["Clipped Highlights (Pure White)", "Crushed Shadows (Pure Black)"],
+        correctIndex: 0,
+        explanation: "Once a pixel hits 100% white, there is no data left. Shadows often retain some noise-heavy data."
+    },
+    "Sharpening": {
+        question: "Sharpening works by:",
+        options: ["Increasing resolution", "Increasing contrast at edges", "Blurring textures"],
+        correctIndex: 1,
+        explanation: "It creates the illusion of detail by darkening/lightening the borders of objects."
+    },
+    "Silhouette": {
+        question: "To create a silhouette, you must expose for the:",
+        options: ["Subject", "Background (Brightest part)", "Shadows"],
+        correctIndex: 1,
+        explanation: "Exposing for the bright background forces the subject into darkness."
+    },
+    "Split Toning": {
+        question: "Split Toning involves:",
+        options: ["Splitting the image in half", "Applying different colors to shadows and highlights", "Removing color"],
+        correctIndex: 1,
+        explanation: "Commonly used for the 'Teal and Orange' look."
+    },
+    "Symmetry": {
+        question: "Symmetrical compositions are often found in:",
+        options: ["Action sports", "Architecture and reflections", "Candid street photography"],
+        correctIndex: 1,
+        explanation: "Man-made structures and water reflections naturally provide symmetry."
+    },
+    "Three-Point Lighting": {
+        question: "Which light is NOT part of standard 3-point lighting?",
+        options: ["Key Light", "Ring Light", "Back Light"],
+        correctIndex: 1,
+        explanation: "Ring lights are specialized. The standard trio is Key, Fill, Back."
+    },
+    "Tone Curve": {
+        question: "An 'S-Curve' adjustment typically:",
+        options: ["Lowers contrast", "Increases contrast", "Inverts colors"],
+        correctIndex: 1,
+        explanation: "It darkens shadows and brightens highlights, stretching the tonal range."
+    },
+    "Vignette": {
+        question: "A vignette helps to:",
+        options: ["Brighten the corners", "Focus attention on the center", "Sharpen the edges"],
+        correctIndex: 1,
+        explanation: "Darkening the periphery pushes the viewer's eye inward."
+    },
+    "Visual Weight": {
+        question: "Which element typically carries the MOST visual weight?",
+        options: ["Empty space", "A human face/eyes", "A blurry background"],
+        correctIndex: 1,
+        explanation: "Humans are biologically wired to look at faces first."
+    },
+    "Zone System": {
+        question: "In the Zone System, Zone V represents:",
+        options: ["Pure Black", "Middle Grey (18%)", "Pure White"],
+        correctIndex: 1,
+        explanation: "Zone V is the anchor point for standard exposure."
     }
 };
 

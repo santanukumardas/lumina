@@ -108,16 +108,13 @@ const StudioPlanner: React.FC = () => {
     };
 
     const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number) => {
-        // Stop bubbling so the container click doesn't deselect
         e.stopPropagation();
-        // Prevent default only on mouse to allow touch scrolling if needed elsewhere, 
-        // but here we likely want to prevent scroll while dragging
-        if (e.cancelable) e.preventDefault();
+        // Allow default only if not moving (to allow click selection), but here we assume drag immediately
+        if (e.cancelable && 'touches' in e) e.preventDefault(); 
         
         setSelectedId(id);
         draggingIdRef.current = id;
         
-        // Add global listeners for move/up
         if ('touches' in e) {
             window.addEventListener('touchmove', handleTouchMove, { passive: false });
             window.addEventListener('touchend', handleDragEnd);
@@ -134,11 +131,9 @@ const StudioPlanner: React.FC = () => {
         const container = containerRef.current;
         const rect = container.getBoundingClientRect();
         
-        // Calculate new position percentage
         const x = ((clientX - rect.left) / rect.width) * 100;
         const y = ((clientY - rect.top) / rect.height) * 100;
         
-        // Constrain to container
         const clampedX = Math.max(0, Math.min(100, x));
         const clampedY = Math.max(0, Math.min(100, y));
 
@@ -179,8 +174,6 @@ const StudioPlanner: React.FC = () => {
             setSelectedId(null);
         }
     };
-
-    // --- RENDER HELPERS ---
 
     const renderLightBeam = (item: StudioItem) => {
         if (!['softbox', 'strobe', 'rim'].includes(item.type)) return null;
@@ -240,56 +233,38 @@ const StudioPlanner: React.FC = () => {
     return (
          <div className="max-w-6xl mx-auto p-4 animate-slide-up">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Studio Planner</h2>
+                <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Studio Planner</h2>
                 <p className="text-zinc-400">Design your lighting diagram. Plan your shot.</p>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6">
                 
-                {/* LEFT TOOLBAR (Top on mobile) */}
-                <div className="lg:w-48 flex flex-col gap-6 order-2 lg:order-1">
-                    <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-6">
-                        <div>
-                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Lighting</h4>
-                            <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
-                                <button onClick={() => addItem('softbox')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Maximize2 size={18} /> Softbox
-                                </button>
-                                <button onClick={() => addItem('strobe')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Zap size={18} /> Strobe
-                                </button>
-                                <button onClick={() => addItem('rim')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Sun size={18} /> Strip
-                                </button>
-                                <button onClick={() => addItem('reflector')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <ScanLine size={18} /> Refl
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Props</h4>
-                            <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
-                                <button onClick={() => addItem('subject')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Users size={18} /> Subject
-                                </button>
-                                <button onClick={() => addItem('camera')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Camera size={18} /> Camera
-                                </button>
-                                <button onClick={() => addItem('background')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <ScanLine size={18} className="rotate-90"/> Back
-                                </button>
-                                <button onClick={() => addItem('vflat')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <Square size={18} /> V-Flat
-                                </button>
-                            </div>
+                {/* TOOLBAR (Top scrollable on mobile, Left on desktop) */}
+                <div className="w-full lg:w-48 flex lg:flex-col gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 order-2 lg:order-1 scrollbar-hide shrink-0">
+                    <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/5 min-w-[200px] lg:min-w-0">
+                        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Lighting</h4>
+                        <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
+                            <ToolBtn onClick={() => addItem('softbox')} icon={Maximize2} label="Softbox" />
+                            <ToolBtn onClick={() => addItem('strobe')} icon={Zap} label="Strobe" />
+                            <ToolBtn onClick={() => addItem('rim')} icon={Sun} label="Strip" />
+                            <ToolBtn onClick={() => addItem('reflector')} icon={ScanLine} label="Refl" />
                         </div>
                     </div>
 
-                    <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800">
+                    <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/5 min-w-[200px] lg:min-w-0">
+                        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Props</h4>
+                        <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
+                            <ToolBtn onClick={() => addItem('subject')} icon={Users} label="Subject" />
+                            <ToolBtn onClick={() => addItem('camera')} icon={Camera} label="Camera" />
+                            <ToolBtn onClick={() => addItem('background')} icon={ScanLine} label="Back" rotate />
+                            <ToolBtn onClick={() => addItem('vflat')} icon={Square} label="V-Flat" />
+                        </div>
+                    </div>
+
+                    <div className="bg-zinc-900/60 backdrop-blur-md p-4 rounded-2xl border border-white/5 min-w-[140px] lg:min-w-0 flex flex-col justify-center">
                         <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Actions</h4>
-                        <button onClick={() => { setItems([]); setSelectedId(null); }} className="w-full p-2 bg-red-900/20 text-red-400 hover:bg-red-900/40 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors">
-                            <Trash2 size={14} /> Clear Stage
+                        <button onClick={() => { setItems([]); setSelectedId(null); }} className="w-full p-2 bg-red-900/20 text-red-400 hover:bg-red-900/40 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-colors border border-red-500/20">
+                            <Trash2 size={14} /> Clear
                         </button>
                     </div>
                 </div>
@@ -298,18 +273,9 @@ const StudioPlanner: React.FC = () => {
                 <div 
                     className="flex-1 aspect-square lg:aspect-[4/3] max-h-[60vh] bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-2xl relative overflow-hidden group shadow-[inset_0_0_40px_rgba(0,0,0,0.5)] order-1 lg:order-2 touch-none"
                     ref={containerRef}
-                    onMouseDown={(e) => {
-                         if (e.target === e.currentTarget) {
-                             setSelectedId(null);
-                         }
-                    }}
-                    onTouchStart={(e) => {
-                         if (e.target === e.currentTarget) {
-                             setSelectedId(null);
-                         }
-                    }}
+                    onMouseDown={(e) => { if (e.target === e.currentTarget) setSelectedId(null); }}
+                    onTouchStart={(e) => { if (e.target === e.currentTarget) setSelectedId(null); }}
                 >
-                     {/* Background Grid */}
                      <div className="absolute inset-0 opacity-10 pointer-events-none" 
                         style={{ backgroundImage: 'linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)', backgroundSize: '40px 40px' }}
                      />
@@ -327,38 +293,23 @@ const StudioPlanner: React.FC = () => {
                                 zIndex: selectedId === item.id ? 50 : 10
                             }}
                          >
-                             {/* Light Beam Layer */}
-                             <div className="absolute top-1/2 left-1/2 w-0 h-0 -z-10">
-                                {renderLightBeam(item)}
-                             </div>
-
-                             {/* Icon Layer */}
-                             <div className={`p-2 transition-all duration-200 ${selectedId === item.id ? 'drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]' : ''}`}>
-                                 {renderIcon(item)}
-                             </div>
-                             
-                             {/* Selection indicator */}
-                             {selectedId === item.id && (
-                                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-4 w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                             )}
+                             <div className="absolute top-1/2 left-1/2 w-0 h-0 -z-10">{renderLightBeam(item)}</div>
+                             <div className={`p-2 transition-all duration-200 ${selectedId === item.id ? 'drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]' : ''}`}>{renderIcon(item)}</div>
+                             {selectedId === item.id && <div className="absolute top-0 left-1/2 -translate-x-1/2 -mt-4 w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>}
                          </div>
                      ))}
                 </div>
 
-                {/* RIGHT SIDEBAR: Properties (Bottom on mobile) */}
+                {/* RIGHT SIDEBAR: Properties */}
                 <div className="lg:w-72 flex flex-col gap-6 order-3">
-                    
-                    <div className={`bg-zinc-900 p-5 rounded-2xl border transition-all duration-300 ${selectedId ? 'border-blue-500/30 ring-1 ring-blue-500/20' : 'border-zinc-800'}`}>
+                    <div className={`bg-zinc-900/60 backdrop-blur-md p-5 rounded-2xl border transition-all duration-300 ${selectedId ? 'border-blue-500/30 ring-1 ring-blue-500/20' : 'border-white/5'}`}>
                         {selectedItem ? (
                             <div className="space-y-6 animate-fade-in">
-                                {/* Header */}
                                 <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
                                     <div className="flex items-center gap-2">
-                                        <div className="p-1.5 bg-zinc-800 rounded text-blue-400">
-                                            <Sliders size={14}/> 
-                                        </div>
+                                        <div className="p-1.5 bg-zinc-800 rounded text-blue-400"><Sliders size={14}/></div>
                                         <div>
-                                            <h3 className="font-bold text-white text-xs uppercase tracking-wide">{selectedItem.type}</h3>
+                                            <h3 className="font-bold text-white text-xs uppercase tracking-wide font-serif">{selectedItem.type}</h3>
                                             <p className="text-[10px] text-zinc-500 font-mono">ID: {selectedItem.id.toString().slice(-4)}</p>
                                         </div>
                                     </div>
@@ -367,144 +318,61 @@ const StudioPlanner: React.FC = () => {
                                     </button>
                                 </div>
 
-                                {/* TRANSFORM GROUP */}
                                 <div>
                                     <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 flex items-center gap-1"><Move size={10}/> Transform</h4>
                                     <div className="space-y-4">
-                                        <div className="space-y-1.5">
-                                            <div className="flex justify-between text-xs text-zinc-400">
-                                                <span>Rotation</span>
-                                                <span className="font-mono text-zinc-500">{Math.round(selectedItem.rotation)}°</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="0" max="360" 
-                                                value={selectedItem.rotation} 
-                                                onChange={(e) => updateItem(selectedItem.id, { rotation: parseInt(e.target.value) })}
-                                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                                            />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <div className="flex justify-between text-xs text-zinc-400">
-                                                <span>Scale</span>
-                                                <span className="font-mono text-zinc-500">{selectedItem.scale.toFixed(1)}x</span>
-                                            </div>
-                                            <input 
-                                                type="range" min="0.5" max="3" step="0.1"
-                                                value={selectedItem.scale} 
-                                                onChange={(e) => updateItem(selectedItem.id, { scale: parseFloat(e.target.value) })}
-                                                className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-                                            />
-                                        </div>
+                                        <ControlRange label="Rotation" value={selectedItem.rotation} min={0} max={360} step={5} unit="°" onChange={(v) => updateItem(selectedItem.id, { rotation: v })} />
+                                        <ControlRange label="Scale" value={selectedItem.scale} min={0.5} max={3} step={0.1} unit="x" onChange={(v) => updateItem(selectedItem.id, { scale: v })} />
                                     </div>
                                 </div>
 
-                                {/* LIGHTING GROUP */}
                                 {isLight && (
                                     <div className="pt-4 border-t border-zinc-800">
                                         <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 flex items-center gap-1"><Zap size={10}/> Output</h4>
                                         <div className="space-y-4">
-                                            <div className="space-y-1.5">
-                                                <div className="flex justify-between text-xs text-zinc-400">
-                                                    <span>Intensity</span>
-                                                    <span className="font-mono text-zinc-500">{Math.round((selectedItem.intensity || 0.5) * 100)}%</span>
-                                                </div>
-                                                <input 
-                                                    type="range" min="0" max="1" step="0.05"
-                                                    value={selectedItem.intensity || 0.5} 
-                                                    onChange={(e) => updateItem(selectedItem.id, { intensity: parseFloat(e.target.value) })}
-                                                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-400"
-                                                />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <div className="flex justify-between text-xs text-zinc-400">
-                                                    <span>Beam Spread</span>
-                                                    <span className="font-mono text-zinc-500">{selectedItem.beamAngle || 100}px</span>
-                                                </div>
-                                                <input 
-                                                    type="range" min="20" max="300" step="10"
-                                                    value={selectedItem.beamAngle || 100} 
-                                                    onChange={(e) => updateItem(selectedItem.id, { beamAngle: parseInt(e.target.value) })}
-                                                    className="w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-yellow-400"
-                                                />
-                                            </div>
+                                            <ControlRange label="Intensity" value={selectedItem.intensity || 0.5} min={0} max={1} step={0.05} unit="" displayValue={`${Math.round((selectedItem.intensity || 0.5) * 100)}%`} onChange={(v) => updateItem(selectedItem.id, { intensity: v })} accent="yellow" />
+                                            <ControlRange label="Beam" value={selectedItem.beamAngle || 100} min={20} max={300} step={10} unit="px" onChange={(v) => updateItem(selectedItem.id, { beamAngle: v })} accent="yellow" />
                                         </div>
                                     </div>
                                 )}
 
-                                {/* APPEARANCE GROUP */}
                                 <div className="pt-4 border-t border-zinc-800">
                                     <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mb-3 flex items-center gap-1"><Palette size={10}/> Style</h4>
                                     <div className="flex gap-2">
-                                        <input 
-                                            type="color" 
-                                            value={selectedItem.color || '#ffffff'}
-                                            onChange={(e) => updateItem(selectedItem.id, { color: e.target.value })}
-                                            className="w-8 h-8 p-0 bg-transparent border-none rounded-full overflow-hidden cursor-pointer hover:scale-110 transition-transform"
-                                        />
-                                        <div className="flex-1 flex gap-1">
-                                            {['#ffffff', '#ffbd00', '#00b4d8', '#ff0000', '#00ff00'].map(c => (
-                                                <button 
-                                                    key={c}
-                                                    onClick={() => updateItem(selectedItem.id, { color: c })}
-                                                    className={`w-8 h-8 rounded-full border border-zinc-700 hover:scale-110 transition-transform ${selectedItem.color === c ? 'ring-2 ring-white' : ''}`}
-                                                    style={{ backgroundColor: c }}
-                                                />
+                                        <div className="flex-1 flex gap-1 flex-wrap">
+                                            {['#ffffff', '#ffbd00', '#00b4d8', '#ff0000', '#00ff00', '#000000'].map(c => (
+                                                <button key={c} onClick={() => updateItem(selectedItem.id, { color: c })} className={`w-6 h-6 rounded-full border border-zinc-700 hover:scale-110 transition-transform ${selectedItem.color === c ? 'ring-2 ring-white' : ''}`} style={{ backgroundColor: c }} />
                                             ))}
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* LAYERING GROUP */}
                                 <div className="pt-4 border-t border-zinc-800 flex justify-between items-center">
                                     <h4 className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest flex items-center gap-1"><Layers size={10}/> Layer</h4>
                                     <div className="flex gap-1">
-                                        <button onClick={() => moveLayer(selectedItem.id, 'down')} className="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded hover:bg-zinc-700" title="Send Backward">
-                                            <ChevronDown size={14} />
-                                        </button>
-                                        <button onClick={() => moveLayer(selectedItem.id, 'up')} className="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded hover:bg-zinc-700" title="Bring Forward">
-                                            <ChevronUp size={14} />
-                                        </button>
+                                        <button onClick={() => moveLayer(selectedItem.id, 'down')} className="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded hover:bg-zinc-700"><ChevronDown size={14} /></button>
+                                        <button onClick={() => moveLayer(selectedItem.id, 'up')} className="p-1.5 bg-zinc-800 text-zinc-400 hover:text-white rounded hover:bg-zinc-700"><ChevronUp size={14} /></button>
                                     </div>
                                 </div>
-
                             </div>
                         ) : (
                             <div className="h-40 lg:h-64 flex flex-col items-center justify-center text-zinc-600 text-sm gap-3">
-                                <div className="p-4 bg-zinc-800/50 rounded-full">
-                                    <RotateCcw size={24} className="opacity-40" />
-                                </div>
+                                <div className="p-4 bg-zinc-800/50 rounded-full"><RotateCcw size={24} className="opacity-40" /></div>
                                 <p>Select an item to edit</p>
                             </div>
                         )}
                     </div>
 
-                    {/* SAVED SLOTS */}
-                    <div className="bg-zinc-900 p-5 rounded-2xl border border-zinc-800">
-                        <h3 className="font-bold text-white uppercase text-xs tracking-wider mb-4 flex items-center gap-2">
-                            <Save size={14}/> Saved Setups
-                        </h3>
+                    <div className="bg-zinc-900/60 backdrop-blur-md p-5 rounded-2xl border border-white/5">
+                        <h3 className="font-bold text-white uppercase text-xs tracking-wider mb-4 flex items-center gap-2"><Save size={14}/> Saved Setups</h3>
                         <div className="space-y-2">
                             {[1, 2, 3].map(slot => (
                                 <div key={slot} className="flex gap-2 items-center group">
-                                    <button 
-                                        onClick={() => loadSetup(slot)}
-                                        disabled={!savedSlots.find(s => s.id === slot)}
-                                        className="flex-1 text-left px-3 py-2 bg-zinc-800 hover:bg-zinc-750 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-xs transition-colors flex justify-between items-center border border-transparent hover:border-zinc-700"
-                                    >
+                                    <button onClick={() => loadSetup(slot)} disabled={!savedSlots.find(s => s.id === slot)} className="flex-1 text-left px-3 py-2 bg-zinc-800/50 hover:bg-zinc-750 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-xs transition-colors flex justify-between items-center border border-transparent hover:border-zinc-700">
                                         <span className="font-medium text-zinc-300">Slot {slot}</span>
-                                        {savedSlots.find(s => s.id === slot) ? (
-                                            <span className="text-[10px] text-emerald-500 font-bold">LOAD</span>
-                                        ) : (
-                                            <span className="text-[10px] text-zinc-600">EMPTY</span>
-                                        )}
+                                        {savedSlots.find(s => s.id === slot) ? <span className="text-[10px] text-emerald-500 font-bold">LOAD</span> : <span className="text-[10px] text-zinc-600">EMPTY</span>}
                                     </button>
-                                    <button 
-                                        onClick={() => saveSetup(slot)}
-                                        className="p-2 bg-zinc-800 hover:bg-blue-600 text-zinc-400 hover:text-white rounded-lg transition-colors border border-transparent hover:border-blue-500"
-                                        title="Save to Slot"
-                                    >
-                                        <Download size={14} className="rotate-180"/> 
-                                    </button>
+                                    <button onClick={() => saveSetup(slot)} className="p-2 bg-zinc-800/50 hover:bg-blue-600 text-zinc-400 hover:text-white rounded-lg transition-colors border border-transparent hover:border-blue-500"><Download size={14} className="rotate-180"/> </button>
                                 </div>
                             ))}
                         </div>
@@ -514,5 +382,27 @@ const StudioPlanner: React.FC = () => {
          </div>
     );
 };
+
+// Sub-components to clean up render
+const ToolBtn = ({ onClick, icon: Icon, label, rotate }: { onClick: () => void, icon: any, label: string, rotate?: boolean }) => (
+    <button onClick={onClick} className="p-2 bg-zinc-800/50 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors border border-transparent hover:border-zinc-600 active:scale-95">
+        <Icon size={18} className={rotate ? "rotate-90" : ""} /> {label}
+    </button>
+);
+
+const ControlRange = ({ label, value, min, max, step, unit, onChange, displayValue, accent = "blue" }: any) => (
+    <div className="space-y-1.5">
+        <div className="flex justify-between text-xs text-zinc-400">
+            <span>{label}</span>
+            <span className="font-mono text-zinc-500">{displayValue || `${value}${unit}`}</span>
+        </div>
+        <input 
+            type="range" min={min} max={max} step={step}
+            value={value} 
+            onChange={(e) => onChange(parseFloat(e.target.value))}
+            className={`w-full h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-${accent}-500`}
+        />
+    </div>
+);
 
 export default StudioPlanner;

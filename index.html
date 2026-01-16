@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
   <head>
@@ -11,9 +12,21 @@
         theme: {
           extend: {
             colors: {
+              // We hijack the 'zinc' palette to use our CSS variables.
+              // This allows the entire app to switch themes without changing class names.
               zinc: {
-                850: '#1f1f22',
-                950: '#09090b',
+                50: 'rgb(var(--c-50) / <alpha-value>)',
+                100: 'rgb(var(--c-100) / <alpha-value>)',
+                200: 'rgb(var(--c-200) / <alpha-value>)',
+                300: 'rgb(var(--c-300) / <alpha-value>)',
+                400: 'rgb(var(--c-400) / <alpha-value>)',
+                500: 'rgb(var(--c-500) / <alpha-value>)',
+                600: 'rgb(var(--c-600) / <alpha-value>)',
+                700: 'rgb(var(--c-700) / <alpha-value>)',
+                800: 'rgb(var(--c-800) / <alpha-value>)',
+                850: 'rgb(var(--c-850) / <alpha-value>)', // Custom shade used in app
+                900: 'rgb(var(--c-900) / <alpha-value>)',
+                950: 'rgb(var(--c-950) / <alpha-value>)',
               }
             },
             animation: {
@@ -57,20 +70,87 @@
         height: 6px;
       }
       ::-webkit-scrollbar-track {
-        background: #09090b;
+        background: rgb(var(--c-950));
       }
       ::-webkit-scrollbar-thumb {
-        background: #27272a;
+        background: rgb(var(--c-800));
         border-radius: 3px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #3f3f46;
+        background: rgb(var(--c-700));
       }
+      
+      /* THEME DEFINITIONS (RGB values for Tailwind) */
+      :root, body.theme-lumina {
+        /* Zinc (Default) - Cool Gray */
+        --c-50: 250 250 250;
+        --c-100: 244 244 245;
+        --c-200: 228 228 231;
+        --c-300: 212 212 216;
+        --c-400: 161 161 170;
+        --c-500: 113 113 122;
+        --c-600: 82 82 91;
+        --c-700: 63 63 70;
+        --c-800: 39 39 42;
+        --c-850: 31 31 34; /* Custom Interpolated */
+        --c-900: 24 24 27;
+        --c-950: 9 9 11;
+      }
+
+      body.theme-midnight {
+        /* Slate - Blue Gray */
+        --c-50: 248 250 252;
+        --c-100: 241 245 249;
+        --c-200: 226 232 240;
+        --c-300: 203 213 225;
+        --c-400: 148 163 184;
+        --c-500: 100 116 139;
+        --c-600: 71 85 105;
+        --c-700: 51 65 85;
+        --c-800: 30 41 59;
+        --c-850: 23 32 48;
+        --c-900: 15 23 42;
+        --c-950: 2 6 23;
+      }
+
+      body.theme-noir {
+        /* Neutral - Pure Gray */
+        --c-50: 250 250 250;
+        --c-100: 245 245 245;
+        --c-200: 229 229 229;
+        --c-300: 212 212 212;
+        --c-400: 163 163 163;
+        --c-500: 115 115 115;
+        --c-600: 82 82 82;
+        --c-700: 64 64 64;
+        --c-800: 38 38 38;
+        --c-850: 31 31 31;
+        --c-900: 23 23 23;
+        --c-950: 10 10 10;
+      }
+
+      body.theme-dune {
+        /* Stone - Warm Gray */
+        --c-50: 250 250 249;
+        --c-100: 245 245 244;
+        --c-200: 231 229 228;
+        --c-300: 214 211 209;
+        --c-400: 168 162 158;
+        --c-500: 120 113 108;
+        --c-600: 87 83 78;
+        --c-700: 68 64 60;
+        --c-800: 41 37 36;
+        --c-850: 35 31 30;
+        --c-900: 28 25 23;
+        --c-950: 12 10 9;
+      }
+
       body {
-        background-color: #09090b;
+        background-color: rgb(var(--c-950));
         color: #f4f4f5;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
         -webkit-tap-highlight-color: transparent;
+        transition: background-color 0.5s ease, color 0.5s ease;
       }
       /* Hide scrollbar for Chrome, Safari and Opera */
       .scrollbar-hide::-webkit-scrollbar {
@@ -80,6 +160,56 @@
       .scrollbar-hide {
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
+      }
+
+      /* ATMOSPHERE & TEXTURE ENHANCEMENTS */
+      
+      /* Global Film Grain */
+      .bg-noise {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 50;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+
+      /* Ambient Glows */
+      .ambient-light {
+        position: fixed;
+        border-radius: 50%;
+        filter: blur(120px);
+        z-index: 0;
+        opacity: 0.12;
+        pointer-events: none;
+        animation: float 20s infinite ease-in-out;
+      }
+
+      .ambient-1 {
+        top: -15%;
+        left: -15%;
+        width: 60vw;
+        height: 60vw;
+        background: radial-gradient(circle, rgba(99,102,241,1) 0%, rgba(99,102,241,0) 70%); /* Indigo */
+      }
+
+      .ambient-2 {
+        bottom: -20%;
+        right: -20%;
+        width: 70vw;
+        height: 70vw;
+        background: radial-gradient(circle, rgba(16,185,129,1) 0%, rgba(16,185,129,0) 70%); /* Emerald */
+        animation-delay: -10s;
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(40px, 60px) scale(1.1); }
+        66% { transform: translate(-30px, 20px) scale(0.95); }
       }
     </style>
   <script type="importmap">

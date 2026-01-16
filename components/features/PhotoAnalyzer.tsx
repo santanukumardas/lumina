@@ -179,7 +179,7 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
         <div className="animate-slide-up max-w-2xl mx-auto">
             {/* MISSION CONTEXT CARD */}
             {mission && !image && (
-                 <div className="mb-6 bg-emerald-900/20 border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between">
+                 <div className="mb-6 bg-emerald-900/20 backdrop-blur-sm border border-emerald-500/30 rounded-xl p-4 flex items-center justify-between">
                      <div>
                          <h3 className="text-emerald-400 font-bold text-sm uppercase tracking-wider mb-1 flex items-center gap-2">
                              <Target size={14} /> Mission Verification Mode
@@ -207,10 +207,10 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
                     ${mission ? 'border-emerald-700/50 hover:border-emerald-500 hover:bg-emerald-900/10' : 'border-zinc-700 hover:border-zinc-500 hover:bg-zinc-900/50'}`}
                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                 >
-                    <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg z-10">
+                    <div className="w-16 h-16 bg-zinc-800/80 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg z-10 backdrop-blur-sm">
                         <Upload className="text-zinc-400 group-hover:text-white" size={32} />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-2 z-10">
+                    <h3 className="text-xl font-bold text-white mb-2 z-10 font-serif">
                         {mission ? 'Upload Mission Proof' : 'Upload your Shot'}
                     </h3>
                     <p className="text-zinc-500 text-sm z-10">Click to select or drag and drop</p>
@@ -254,7 +254,7 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
 
                         {/* Error Overlay (Rate Limit) */}
                         {limitError && (
-                            <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                            <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center animate-fade-in">
                                 <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4">
                                     <AlertTriangle className="text-amber-500" size={32} />
                                 </div>
@@ -273,7 +273,7 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
 
                         {/* API Error Overlay */}
                         {error && (
-                             <div className="absolute inset-0 z-20 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center animate-fade-in">
+                             <div className="absolute inset-0 z-20 bg-black/60 backdrop-blur-xl flex flex-col items-center justify-center p-8 text-center animate-fade-in">
                                 <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
                                     <AlertTriangle className="text-red-500" size={32} />
                                 </div>
@@ -290,8 +290,8 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
 
                         {/* Result Score Overlay */}
                         {!analyzing && result && !error && (
-                            <div className={`absolute top-4 right-4 w-16 h-16 bg-zinc-900/90 backdrop-blur-xl rounded-full border-2 flex items-center justify-center shadow-lg animate-zoom-in ${mission ? 'border-emerald-500' : 'border-cyan-500'}`}>
-                                <span className="text-xl font-bold text-white">{result.score}</span>
+                            <div className={`absolute top-4 right-4 w-16 h-16 bg-zinc-900/80 backdrop-blur-xl rounded-full border-2 flex items-center justify-center shadow-lg animate-zoom-in ${mission ? 'border-emerald-500' : 'border-cyan-500'}`}>
+                                <span className="text-xl font-bold text-white font-mono">{result.score}</span>
                             </div>
                         )}
                     </div>
@@ -299,7 +299,7 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
                     {/* Report Card */}
                     {!analyzing && result && !error && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-slide-up">
-                            <div className="bg-zinc-900/50 border border-emerald-500/20 rounded-2xl p-6">
+                            <div className="bg-zinc-900/50 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6">
                                 <div className="flex items-center gap-2 mb-4 text-emerald-400 font-bold uppercase tracking-wider text-xs">
                                     <CheckCircle size={16} /> {mission ? 'Mission Successes' : 'What Works'}
                                 </div>
@@ -313,7 +313,7 @@ const PhotoAnalyzer: React.FC<PhotoAnalyzerProps> = ({ mission, onClearMission, 
                                 </ul>
                             </div>
 
-                            <div className="bg-zinc-900/50 border border-amber-500/20 rounded-2xl p-6">
+                            <div className="bg-zinc-900/50 backdrop-blur-sm border border-amber-500/20 rounded-2xl p-6">
                                 <div className="flex items-center gap-2 mb-4 text-amber-400 font-bold uppercase tracking-wider text-xs">
                                     <AlertTriangle size={16} /> {mission ? 'Mission Failures' : 'Improvements'}
                                 </div>

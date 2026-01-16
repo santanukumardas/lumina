@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, Key, Save, AlertTriangle, ExternalLink, AlertCircle, Trash2, Database } from 'lucide-react';
+import { X, Key, Save, AlertTriangle, ExternalLink, AlertCircle, Trash2, Database, Palette, Check } from 'lucide-react';
 
 interface GlobalSettingsProps {
     isOpen: boolean;
@@ -8,11 +8,19 @@ interface GlobalSettingsProps {
     onResetData?: () => void;
 }
 
+const THEMES = [
+    { id: 'theme-lumina', name: 'Lumina', color: '#18181b', ring: 'ring-zinc-500', desc: 'Default Zinc' },
+    { id: 'theme-midnight', name: 'Midnight', color: '#0f172a', ring: 'ring-blue-500', desc: 'Cool Slate' },
+    { id: 'theme-noir', name: 'Noir', color: '#171717', ring: 'ring-neutral-500', desc: 'Pure Neutral' },
+    { id: 'theme-dune', name: 'Dune', color: '#1c1917', ring: 'ring-orange-500', desc: 'Warm Stone' },
+];
+
 const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onResetData }) => {
     const [customKey, setCustomKey] = useState('');
     const [saved, setSaved] = useState(false);
     const [validationError, setValidationError] = useState<string | null>(null);
     const [confirmReset, setConfirmReset] = useState(false);
+    const [currentTheme, setCurrentTheme] = useState('theme-lumina');
 
     useEffect(() => {
         if (isOpen) {
@@ -21,14 +29,17 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
             setSaved(false);
             setValidationError(null);
             setConfirmReset(false);
+            
+            // Sync theme state
+            const savedTheme = localStorage.getItem('lumina_theme') || 'theme-lumina';
+            setCurrentTheme(savedTheme);
         }
     }, [isOpen]);
 
-    const handleSave = () => {
+    const handleSaveKey = () => {
         setValidationError(null);
         const trimmedKey = customKey.trim();
 
-        // 1. Scenario: User trying to save an invalid format
         if (trimmedKey) {
             if (!trimmedKey.startsWith('AIza')) {
                 setValidationError("Invalid Format: Google API keys must start with 'AIza'.");
@@ -40,14 +51,12 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
             }
         }
 
-        // 2. Scenario: User clearing the key (allowed, reverts to demo if env exists)
         localStorage.setItem('lumina_custom_key', trimmedKey);
         setCustomKey(trimmedKey);
         
         setSaved(true);
         setTimeout(() => {
             setSaved(false);
-            onClose();
         }, 800);
     };
 
@@ -61,19 +70,53 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
         onClose();
     };
 
+    const handleThemeChange = (themeId: string) => {
+        setCurrentTheme(themeId);
+        localStorage.setItem('lumina_theme', themeId);
+        document.body.className = themeId;
+    };
+
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-            <div className="bg-zinc-950 border border-zinc-800 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
-                <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
+            <div className="bg-zinc-950/90 backdrop-blur-2xl border border-white/10 w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative" onClick={e => e.stopPropagation()}>
+                <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50 backdrop-blur-sm">
                     <h3 className="text-lg font-bold text-white">Settings</h3>
                     <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors">
                         <X size={20} />
                     </button>
                 </div>
                 
-                <div className="p-6 space-y-8">
+                <div className="p-6 space-y-8 max-h-[80vh] overflow-y-auto scrollbar-hide">
+                    
+                    {/* THEME SELECTOR */}
+                    <div>
+                        <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Palette size={14} /> Interface Theme
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                            {THEMES.map(theme => (
+                                <button
+                                    key={theme.id}
+                                    onClick={() => handleThemeChange(theme.id)}
+                                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all ${currentTheme === theme.id ? `bg-zinc-800 border-white/20 ring-1 ${theme.ring} ring-offset-2 ring-offset-zinc-950` : 'bg-zinc-900/60 border-zinc-800 hover:bg-zinc-800'}`}
+                                >
+                                    <div 
+                                        className="w-8 h-8 rounded-full border border-white/10 shadow-inner"
+                                        style={{ backgroundColor: theme.color }}
+                                    />
+                                    <div className="text-left">
+                                        <div className={`text-sm font-bold ${currentTheme === theme.id ? 'text-white' : 'text-zinc-400'}`}>{theme.name}</div>
+                                        <div className="text-[10px] text-zinc-600">{theme.desc}</div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="w-full h-px bg-zinc-800"></div>
+
                     {/* API Key Section */}
                     <div>
                         <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4 flex items-center gap-2">
@@ -85,7 +128,6 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
                                 <ul className="text-[11px] text-zinc-400 space-y-2 list-disc pl-4 leading-relaxed">
                                     <li>Use keys from <a href="https://aistudio.google.com" target="_blank" rel="noreferrer" className="text-indigo-400 hover:underline inline-flex items-center gap-0.5">Google AI Studio <ExternalLink size={8}/></a>.</li>
                                     <li>Keys are stored locally in your browser.</li>
-                                    <li>Browser-based API calls are restricted in EU, UK, and Switzerland.</li>
                                     <li>Ensure your key has access to <code>gemini-3-flash-preview</code>.</li>
                                 </ul>
                             </div>
@@ -102,7 +144,7 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
                                         if (validationError) setValidationError(null);
                                     }}
                                     placeholder="AIzaSy..."
-                                    className={`w-full bg-zinc-900 border rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-600 font-mono ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500/50'}`}
+                                    className={`w-full bg-zinc-900/50 border rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 transition-all placeholder:text-zinc-600 font-mono ${validationError ? 'border-red-500 focus:border-red-500 focus:ring-red-500/50' : 'border-zinc-700 focus:border-indigo-500 focus:ring-indigo-500/50'}`}
                                 />
                             </div>
                             
@@ -113,10 +155,10 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
                             )}
 
                             <button 
-                                onClick={handleSave}
-                                className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${saved ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-zinc-200'}`}
+                                onClick={handleSaveKey}
+                                className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${saved ? 'bg-emerald-500 text-white' : 'bg-white text-black hover:bg-zinc-200'}`}
                             >
-                                {saved ? <>Saved Successfully!</> : <><Save size={18} /> Save Key</>}
+                                {saved ? <><Check size={18}/> Saved Successfully!</> : <><Save size={18} /> Save Key</>}
                             </button>
                         </div>
                     </div>
@@ -129,7 +171,7 @@ const GlobalSettings: React.FC<GlobalSettingsProps> = ({ isOpen, onClose, onRese
                             <Database size={14} /> Data Management
                         </h4>
                         
-                        <div className="bg-zinc-900 rounded-xl p-4 border border-zinc-800 flex flex-col gap-2">
+                        <div className="bg-zinc-900/60 rounded-xl p-4 border border-zinc-800 flex flex-col gap-2">
                             <p className="text-xs text-zinc-400 leading-relaxed mb-2">
                                 Your progress, bookmarks, and active missions are stored on this device.
                             </p>

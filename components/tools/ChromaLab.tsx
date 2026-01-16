@@ -62,21 +62,21 @@ const ChromaLab: React.FC = () => {
     return (
         <div className="max-w-5xl mx-auto p-4 animate-slide-up">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-white mb-2">Chroma Lab</h2>
+                <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Chroma Lab</h2>
                 <p className="text-zinc-400">Extract color palettes from your photos to understand harmony.</p>
             </div>
             
-            <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 shadow-2xl isolate" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
+            <div className="bg-zinc-900/60 backdrop-blur-md border border-white/5 rounded-3xl p-6 shadow-2xl isolate" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                  <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className={`w-full aspect-video max-h-[40vh] mx-auto rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden ${image ? 'border-transparent' : 'border-zinc-700 hover:bg-zinc-800'}`}
+                    className={`w-full aspect-video max-h-[40vh] mx-auto rounded-2xl border-2 border-dashed flex flex-col items-center justify-center cursor-pointer transition-all relative overflow-hidden ${image ? 'border-transparent' : 'border-zinc-700 hover:bg-zinc-800/50'}`}
                 >
                     {image ? (
                         <img src={image} className="w-full h-full object-contain bg-black" />
                     ) : (
                         <div className="text-center">
                             <Upload className="mx-auto mb-2 text-zinc-500" size={32} />
-                            <p className="text-zinc-400 font-bold">Upload Reference Photo</p>
+                            <p className="text-zinc-400 font-bold font-serif tracking-wide">Upload Reference Photo</p>
                         </div>
                     )}
                     <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/jpeg, image/png, image/webp" />
@@ -86,11 +86,11 @@ const ChromaLab: React.FC = () => {
 
                  {palette.length > 0 && (
                      <div className="mt-8">
-                         <h3 className="text-white font-bold mb-4 flex items-center gap-2"><Palette size={18} /> Extracted Palette</h3>
+                         <h3 className="text-white font-bold mb-4 flex items-center gap-2 uppercase tracking-widest text-xs font-serif"><Palette size={18} /> Extracted Palette</h3>
                          <div className="grid grid-cols-5 gap-2 md:gap-4">
                              {palette.map((hex, i) => (
                                  <div key={i} className="flex flex-col gap-2 group">
-                                     <div className="aspect-square rounded-xl shadow-lg transition-transform group-hover:scale-105" style={{ backgroundColor: hex }}></div>
+                                     <div className="aspect-square rounded-xl shadow-lg transition-transform group-hover:scale-105 border border-white/10" style={{ backgroundColor: hex }}></div>
                                      <span className="text-xs text-center font-mono text-zinc-500 select-all cursor-pointer hover:text-white transition-colors">
                                          {hex.toUpperCase()}
                                      </span>

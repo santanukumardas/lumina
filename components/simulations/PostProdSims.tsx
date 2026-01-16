@@ -42,63 +42,63 @@ export const LightPanelSim: React.FC<PostProdProps> = ({ image, onUpload }) => {
             </div>
 
             {/* Controls Sidebar */}
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-800">
                     <Sun size={18} className="text-zinc-400"/>
-                    <h3 className="text-white font-bold text-sm uppercase tracking-wide">Light Panel</h3>
+                    <h3 className="text-white font-bold text-sm uppercase tracking-wide font-serif">Light Panel</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {/* Exposure */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Exposure</span>
-                            <span>{exposure > 0 ? '+' : ''}{exposure}</span>
+                            <span className="font-mono text-white">{exposure > 0 ? '+' : ''}{exposure}</span>
                         </div>
                         <input type="range" min="-50" max="50" value={exposure} onChange={(e) => setExposure(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Contrast */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Contrast</span>
-                            <span>{contrast > 0 ? '+' : ''}{contrast}</span>
+                            <span className="font-mono text-white">{contrast > 0 ? '+' : ''}{contrast}</span>
                         </div>
                         <input type="range" min="-50" max="50" value={contrast} onChange={(e) => setContrast(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Highlights */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Highlights</span>
-                            <span>{highlights > 0 ? '+' : ''}{highlights}</span>
+                            <span className="font-mono text-white">{highlights > 0 ? '+' : ''}{highlights}</span>
                         </div>
                         <input type="range" min="-100" max="100" value={highlights} onChange={(e) => setHighlights(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Shadows */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Shadows</span>
-                            <span>{shadows > 0 ? '+' : ''}{shadows}</span>
+                            <span className="font-mono text-white">{shadows > 0 ? '+' : ''}{shadows}</span>
                         </div>
                         <input type="range" min="-100" max="100" value={shadows} onChange={(e) => setShadows(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Whites */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Whites</span>
-                            <span>{whites > 0 ? '+' : ''}{whites}</span>
+                            <span className="font-mono text-white">{whites > 0 ? '+' : ''}{whites}</span>
                         </div>
                         <input type="range" min="-50" max="50" value={whites} onChange={(e) => setWhites(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Blacks */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span>Blacks</span>
-                            <span>{blacks > 0 ? '+' : ''}{blacks}</span>
+                            <span className="font-mono text-white">{blacks > 0 ? '+' : ''}{blacks}</span>
                         </div>
                         <input type="range" min="-50" max="50" value={blacks} onChange={(e) => setBlacks(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
@@ -147,36 +147,36 @@ export const EffectsPanelSim: React.FC<PostProdProps> = ({ image, onUpload }) =>
             </div>
 
             {/* Controls Sidebar */}
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5">
                 <div className="flex items-center gap-2 mb-4 pb-2 border-b border-zinc-800">
                     <Sparkles size={18} className="text-zinc-400"/>
-                    <h3 className="text-white font-bold text-sm uppercase tracking-wide">Effects Panel</h3>
+                    <h3 className="text-white font-bold text-sm uppercase tracking-wide font-serif">Effects Panel</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Vignette */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span className="flex items-center gap-1"><EyeOff size={10}/> Vignette</span>
-                            <span>{vignette}</span>
+                            <span className="font-mono text-white">{vignette}</span>
                         </div>
                         <input type="range" min="0" max="100" value={vignette} onChange={(e) => setVignette(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Grain */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span className="flex items-center gap-1"><Wind size={10}/> Grain</span>
-                            <span>{grain}</span>
+                            <span className="font-mono text-white">{grain}</span>
                         </div>
                         <input type="range" min="0" max="100" value={grain} onChange={(e) => setGrain(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
 
                     {/* Dehaze */}
                     <div className="space-y-1">
-                        <div className="flex justify-between text-xs text-zinc-400 font-medium">
+                        <div className="flex justify-between text-xs text-zinc-400 font-medium uppercase tracking-wider text-xs font-bold">
                             <span className="flex items-center gap-1"><Contrast size={10}/> Dehaze</span>
-                            <span>{dehaze}</span>
+                            <span className="font-mono text-white">{dehaze}</span>
                         </div>
                         <input type="range" min="0" max="100" value={dehaze} onChange={(e) => setDehaze(parseInt(e.target.value))} className="w-full h-1.5 accent-white bg-zinc-700 rounded-lg appearance-none cursor-pointer"/>
                     </div>
@@ -225,10 +225,10 @@ export const ToneCurveSim: React.FC<PostProdProps> = ({ image, onUpload }) => {
             </div>
 
             {/* The Controls Area */}
-            <div className="w-full bg-zinc-900 rounded-2xl border border-zinc-800 p-6 flex flex-col md:flex-row gap-8 items-center">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md rounded-2xl border border-white/5 p-6 flex flex-col md:flex-row gap-8 items-center">
                 
                 {/* Graph */}
-                <div className="w-64 h-64 bg-zinc-950 rounded-xl border border-zinc-700/50 relative flex items-center justify-center shrink-0">
+                <div className="w-64 h-64 bg-zinc-950 rounded-xl border border-zinc-700/50 relative flex items-center justify-center shrink-0 shadow-inner">
                     <div className="w-full h-full relative">
                         {/* Grid */}
                         <div className="absolute inset-0 grid grid-cols-4 grid-rows-4 pointer-events-none">
@@ -257,7 +257,7 @@ export const ToneCurveSim: React.FC<PostProdProps> = ({ image, onUpload }) => {
 
                 {/* Slider */}
                 <div className="flex-1 w-full">
-                    <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400">
+                    <div className="flex justify-between mb-4 text-sm font-medium text-zinc-400 uppercase tracking-wider text-xs font-bold">
                         <span>Fade / Matte</span>
                         <span>Linear</span>
                         <span>High Contrast (S-Curve)</span>
@@ -317,9 +317,9 @@ export const SplitToningSim: React.FC<PostProdProps> = ({ image, onUpload }) => 
                  />
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Shadow Tint</span>
                         <div className="w-4 h-4 rounded-full" style={{ backgroundColor: `hsl(${shadowHue}, 100%, 50%)`}}></div>
                      </div>
@@ -331,7 +331,7 @@ export const SplitToningSim: React.FC<PostProdProps> = ({ image, onUpload }) => 
                 </div>
                 
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Highlight Tint</span>
                         <div className="w-4 h-4 rounded-full" style={{ backgroundColor: `hsl(${highlightHue}, 100%, 50%)`}}></div>
                      </div>
@@ -343,7 +343,7 @@ export const SplitToningSim: React.FC<PostProdProps> = ({ image, onUpload }) => 
                 </div>
 
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Intensity</span>
                      </div>
                      <input 
@@ -389,11 +389,11 @@ export const HslSim: React.FC<PostProdProps> = ({ image, onUpload }) => {
                  </div>
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Global Hue Shift</span>
-                        <span>{blueShift}°</span>
+                        <span className="font-mono text-white">{blueShift}°</span>
                      </div>
                      <input 
                         type="range" min="-180" max="180" value={blueShift} 
@@ -404,9 +404,9 @@ export const HslSim: React.FC<PostProdProps> = ({ image, onUpload }) => {
                 </div>
                 
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Saturation</span>
-                        <span>{greenShift > 0 ? '+' : ''}{greenShift}</span>
+                        <span className="font-mono text-white">{greenShift > 0 ? '+' : ''}{greenShift}</span>
                      </div>
                      <input 
                         type="range" min="-100" max="100" value={greenShift} 
@@ -464,11 +464,11 @@ export const ClaritySharpenSim: React.FC<PostProdProps> = ({ image, onUpload }) 
                  )}
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="w-full bg-zinc-900/60 backdrop-blur-md p-6 rounded-xl border border-white/5 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Clarity (Structure)</span>
-                        <span>{clarity}</span>
+                        <span className="font-mono text-white">{clarity}</span>
                      </div>
                      <input 
                         type="range" min="0" max="100" value={clarity} 
@@ -478,9 +478,9 @@ export const ClaritySharpenSim: React.FC<PostProdProps> = ({ image, onUpload }) 
                 </div>
                 
                 <div>
-                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500">
+                     <div className="flex justify-between mb-2 text-xs font-bold uppercase tracking-wider text-zinc-500 uppercase tracking-wider text-xs font-bold">
                         <span>Sharpening (Edge Detail)</span>
-                        <span>{sharpen}</span>
+                        <span className="font-mono text-white">{sharpen}</span>
                      </div>
                      <input 
                         type="range" min="0" max="100" value={sharpen} 

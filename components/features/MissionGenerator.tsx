@@ -47,52 +47,52 @@ const MissionGenerator: React.FC<MissionGeneratorProps> = ({ onVerify, existingM
     return (
         <div className="max-w-2xl mx-auto px-4 animate-slide-up">
             <div className="text-center mb-10">
-                <h2 className="text-3xl font-bold text-white mb-2">Creative Missions</h2>
+                <h2 className="text-3xl font-bold text-white mb-2 font-serif tracking-tight">Creative Missions</h2>
                 <p className="text-zinc-400">Break your creative block with a randomized photo assignment.</p>
             </div>
 
             {/* If we have a saved mission (and not currently generating), show the ACTIVE MISSION CARD */}
             {existingMission && !generating ? (
                 <div 
-                    className="bg-zinc-900 border border-emerald-500/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden animate-zoom-in isolate"
+                    className="bg-zinc-900/60 backdrop-blur-xl border border-emerald-500/30 rounded-3xl p-8 shadow-2xl relative overflow-hidden animate-zoom-in isolate"
                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                 >
                      <div className="absolute inset-0 bg-emerald-900/10"></div>
                      <div className="absolute top-0 right-0 p-4">
-                         <span className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest animate-pulse">
+                         <span className="flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold uppercase tracking-widest animate-pulse font-mono">
                              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-                             Active Assignment
+                             Active
                          </span>
                      </div>
 
                      <div className="relative z-10">
-                         <h3 className="text-2xl font-bold text-white mb-6">Mission Briefing</h3>
+                         <h3 className="text-2xl font-bold text-white mb-6 font-serif">Mission Briefing</h3>
                          
                          <div className="space-y-4 mb-8">
                              <div className="flex flex-col gap-1">
-                                 <span className="text-xs font-mono text-zinc-500 uppercase">Target Subject</span>
-                                 <span className="text-xl text-white font-medium">{existingMission.subject}</span>
+                                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Target Subject</span>
+                                 <span className="text-2xl text-white font-serif tracking-wide">{existingMission.subject}</span>
                              </div>
                              <div className="flex flex-col gap-1">
-                                 <span className="text-xs font-mono text-zinc-500 uppercase">Required Technique</span>
-                                 <span className="text-xl text-white font-medium">{existingMission.technique}</span>
+                                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Required Technique</span>
+                                 <span className="text-2xl text-white font-serif tracking-wide">{existingMission.technique}</span>
                              </div>
                              <div className="flex flex-col gap-1">
-                                 <span className="text-xs font-mono text-zinc-500 uppercase">Constraint</span>
-                                 <span className="text-xl text-amber-400 font-medium">{existingMission.constraint}</span>
+                                 <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">Constraint</span>
+                                 <span className="text-2xl text-amber-400 font-serif tracking-wide italic">{existingMission.constraint}</span>
                              </div>
                          </div>
 
                          <div className="flex flex-col sm:flex-row gap-4">
                             <button 
                                 onClick={() => onVerify(existingMission)}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all hover:scale-[1.02]"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all hover:scale-[1.02] shadow-lg shadow-emerald-900/20"
                             >
                                 <ClipboardCheck size={20} /> Verify Mission
                             </button>
                             <button 
                                 onClick={onDiscardMission}
-                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-zinc-800 hover:bg-red-900/30 hover:border-red-500/50 hover:text-red-400 border border-zinc-700 text-zinc-400 rounded-xl font-bold transition-all"
+                                className="flex-1 flex items-center justify-center gap-2 px-6 py-4 bg-zinc-800/50 hover:bg-red-900/30 hover:border-red-500/50 hover:text-red-400 border border-zinc-700 text-zinc-400 rounded-xl font-bold transition-all"
                             >
                                 <Trash2 size={20} /> Abort Mission
                             </button>
@@ -104,7 +104,7 @@ const MissionGenerator: React.FC<MissionGeneratorProps> = ({ onVerify, existingM
                 </div>
             ) : (
                 <div 
-                    className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden isolate"
+                    className="bg-zinc-900/60 backdrop-blur-xl border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden isolate"
                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                 >
                     {/* Decorative Grid Background */}
@@ -115,21 +115,21 @@ const MissionGenerator: React.FC<MissionGeneratorProps> = ({ onVerify, existingM
                     <div className="relative z-10 flex flex-col gap-6">
                         {/* Mission Slots */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
-                                <div className="text-xs font-mono text-cyan-500 uppercase tracking-widest mb-1">Subject</div>
-                                <div className={`text-lg md:text-xl font-bold text-white ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
+                            <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
+                                <div className="text-xs font-bold text-cyan-500 uppercase tracking-widest mb-1">Subject</div>
+                                <div className={`text-lg md:text-xl font-bold text-white font-serif ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
                                     {activeMission ? activeMission.subject : '???'}
                                 </div>
                             </div>
-                            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
-                                <div className="text-xs font-mono text-fuchsia-500 uppercase tracking-widest mb-1">Technique</div>
-                                <div className={`text-lg md:text-xl font-bold text-white ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
+                            <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
+                                <div className="text-xs font-bold text-fuchsia-500 uppercase tracking-widest mb-1">Technique</div>
+                                <div className={`text-lg md:text-xl font-bold text-white font-serif ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
                                     {activeMission ? activeMission.technique : '???'}
                                 </div>
                             </div>
-                            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
-                                <div className="text-xs font-mono text-amber-500 uppercase tracking-widest mb-1">Constraint</div>
-                                <div className={`text-lg md:text-xl font-bold text-white ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
+                            <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 aspect-square md:aspect-auto md:h-40 shadow-inner">
+                                <div className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-1">Constraint</div>
+                                <div className={`text-lg md:text-xl font-bold text-white font-serif ${generating ? 'opacity-50 blur-[1px]' : ''}`}>
                                     {activeMission ? activeMission.constraint : '???'}
                                 </div>
                             </div>

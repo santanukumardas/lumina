@@ -13,7 +13,7 @@ export type SearchResults = {
 };
 
 export default function App() {
-  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'search' | 'bookmarks'>('home');
+  const [viewMode, setViewMode] = useState<'home' | 'gallery-menu' | 'category' | 'lesson' | 'critique' | 'missions' | 'concepts' | 'darkroom' | 'chroma-lab' | 'studio-planner' | 'dof-calc' | 'nd-sim' | 'rgb-curves' | 'zone-system' | 'diffraction' | 'exposure-reflex' | 'perspective-shift' | 'eq-exposure' | 'fov-comparator' | 'search' | 'bookmarks'>('home');
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [showSettings, setShowSettings] = useState(false);
@@ -45,6 +45,12 @@ export default function App() {
 
   const scrollPositions = useRef<Record<string, number>>({});
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+      // Initialize Theme
+      const savedTheme = localStorage.getItem('lumina_theme') || 'theme-lumina';
+      document.body.className = savedTheme;
+  }, []);
 
   useEffect(() => {
       localStorage.setItem('lumina_completed_lessons', JSON.stringify(completedLessons));
@@ -185,7 +191,13 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20">
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-white/20 select-none relative overflow-x-hidden">
+      
+      {/* Atmosphere Elements */}
+      <div className="bg-noise"></div>
+      <div className="ambient-light ambient-1"></div>
+      <div className="ambient-light ambient-2"></div>
+
       <Header 
         viewMode={viewMode} 
         onBack={handleBack} 
@@ -202,8 +214,8 @@ export default function App() {
         onResetData={handleResetData}
       />
 
-      {/* Optimized padding for mobile: px-4 on mobile, md:px-4. py-4 mobile, py-8 desktop */}
-      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 pb-32 md:pb-24">
+      {/* Main Content with adjusted top padding for Fixed Header */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 pt-32 pb-32 md:pt-24 md:pb-24 relative z-10">
          <MainView 
             viewMode={viewMode}
             activeCategory={activeCategory}
