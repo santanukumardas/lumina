@@ -100,7 +100,8 @@ export default function App() {
 
       <GlobalSettings isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
-      <main className="max-w-7xl mx-auto px-4 py-8 pb-24">
+      {/* Optimized padding for mobile: px-4 on mobile, md:px-4. py-4 mobile, py-8 desktop */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-8 pb-32 md:pb-24">
          <MainView 
             viewMode={viewMode}
             activeCategory={activeCategory}

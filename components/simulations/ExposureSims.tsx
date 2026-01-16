@@ -28,7 +28,7 @@ export const ApertureSim: React.FC = () => {
             </button>
         </div>
 
-      <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-900/50 rounded-2xl overflow-hidden border border-zinc-800 flex items-center justify-center shadow-inner group">
+      <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-900/50 rounded-2xl overflow-hidden border border-zinc-800 flex items-center justify-center shadow-inner group">
         
         {scene === 'portrait' ? (
             <>
@@ -129,7 +129,7 @@ export const ShutterSim: React.FC = () => {
             <button onClick={() => setScene('water')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${scene === 'water' ? 'bg-zinc-700 text-white shadow-sm' : 'text-zinc-500 hover:text-zinc-300'}`}>Water Flow</button>
         </div>
 
-      <div className="relative w-full h-[40vh] min-h-[300px] max-h-[500px] bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-inner flex items-center justify-center">
+      <div className="relative w-full aspect-[4/3] md:h-[40vh] md:aspect-auto bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-inner flex items-center justify-center">
         {scene === 'car' ? (
              <>
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_49%,rgba(255,255,255,0.1)_50%,transparent_51%)] bg-[length:100px_100%]"></div>
@@ -228,7 +228,7 @@ export const IsoSim: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-      <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+      <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
         <div 
             className="absolute inset-0 bg-cover bg-center transition-all duration-300"
             style={{ 
@@ -286,7 +286,7 @@ export const MeteringSim: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-            <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl group">
+            <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-black rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl group">
                 {/* High Contrast Scene */}
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-out"
@@ -301,7 +301,7 @@ export const MeteringSim: React.FC = () => {
                      {/* Center / Matrix */}
                      {mode === 'matrix' && (
                          <div className="absolute inset-0 flex items-center justify-center">
-                             <div className="w-64 h-48 border-2 border-white/30 rounded-lg flex items-center justify-center">
+                             <div className="w-48 h-32 md:w-64 md:h-48 border-2 border-white/30 rounded-lg flex items-center justify-center">
                                  <div className="w-full h-px bg-white/30"></div>
                                  <div className="h-full w-px bg-white/30 absolute"></div>
                              </div>
@@ -328,21 +328,21 @@ export const MeteringSim: React.FC = () => {
                  <div className="flex gap-2 w-full">
                      <button 
                         onClick={() => setMode('matrix')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${mode === 'matrix' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${mode === 'matrix' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
                      >
-                         Matrix (Balanced)
+                         Matrix
                      </button>
                      <button 
                         onClick={() => setMode('spot-shadow')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${mode === 'spot-shadow' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${mode === 'spot-shadow' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
                      >
-                         Spot (Shadows)
+                         Spot (Shadow)
                      </button>
                      <button 
                         onClick={() => setMode('spot-highlight')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${mode === 'spot-highlight' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${mode === 'spot-highlight' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-750'}`}
                      >
-                         Spot (Highlights)
+                         Spot (High)
                      </button>
                  </div>
                  <p className="text-zinc-400 text-sm mt-2">{exp.text}</p>
@@ -362,7 +362,7 @@ export const FocalLengthSim: React.FC = () => {
     
     return (
         <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-            <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
+            <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
                 {/* Background (scales up to show compression) */}
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-100 origin-center"
@@ -419,7 +419,7 @@ export const SensorSizeSim: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-            <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+            <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
                 {/* Full Image */}
                 <div 
                     className="absolute inset-0 bg-cover bg-center opacity-30 grayscale"
@@ -444,19 +444,19 @@ export const SensorSizeSim: React.FC = () => {
             <div className="flex gap-2 w-full max-w-lg">
                      <button 
                         onClick={() => setSensor('ff')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${sensor === 'ff' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${sensor === 'ff' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
                      >
                          Full Frame
                      </button>
                      <button 
                         onClick={() => setSensor('apsc')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${sensor === 'apsc' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${sensor === 'apsc' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
                      >
                          APS-C
                      </button>
                      <button 
                         onClick={() => setSensor('m43')}
-                        className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${sensor === 'm43' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+                        className={`flex-1 py-3 rounded-lg text-xs md:text-sm font-medium transition-all ${sensor === 'm43' ? 'bg-zinc-700 text-white' : 'bg-zinc-800 text-zinc-400'}`}
                      >
                          Micro 4/3
                      </button>
@@ -483,7 +483,7 @@ export const FocusPeakingSim: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-            <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-end justify-center">
+            <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-end justify-center">
                 {/* Background (Mountain) */}
                 <div 
                     className={`absolute inset-0 bg-cover bg-center transition-all duration-300 ${plane === 'background' ? 'blur-0' : 'blur-sm'}`}
@@ -544,7 +544,7 @@ export const DynamicRangeSim: React.FC = () => {
 
     return (
         <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-            <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
+            <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex items-center justify-center">
                 {/* Base Image */}
                 <div 
                     className="absolute inset-0 bg-cover bg-center transition-all duration-500"
@@ -563,7 +563,7 @@ export const DynamicRangeSim: React.FC = () => {
                 )}
             </div>
 
-            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex gap-4">
+            <div className="w-full bg-zinc-900 p-6 rounded-xl border border-zinc-800 flex flex-col md:flex-row gap-4">
                  <button 
                     onClick={() => setDrMode('low')}
                     className={`flex-1 py-4 rounded-lg text-sm font-medium transition-all ${drMode === 'low' ? 'bg-zinc-700 text-white shadow-inner' : 'bg-zinc-800 text-zinc-400'}`}
@@ -604,7 +604,7 @@ export const HistogramSim: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center w-full max-w-5xl mx-auto gap-4 p-4">
-      <div className="relative w-full h-[50vh] min-h-[350px] max-h-[600px] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex flex-col">
+      <div className="relative w-full aspect-[4/3] md:h-[50vh] md:aspect-auto bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl flex flex-col">
         {/* Preview Image */}
         <div 
           className="flex-1 bg-cover bg-center transition-all duration-100"
@@ -615,7 +615,7 @@ export const HistogramSim: React.FC = () => {
         />
         
         {/* Histogram Overlay */}
-        <div className="absolute top-4 right-4 w-48 h-32 bg-black/60 backdrop-blur-sm rounded-lg border border-white/10 p-2 flex items-end justify-between gap-0.5 shadow-lg">
+        <div className="absolute top-4 right-4 w-32 h-24 md:w-48 md:h-32 bg-black/60 backdrop-blur-sm rounded-lg border border-white/10 p-2 flex items-end justify-between gap-0.5 shadow-lg">
            {bars.map((h, i) => (
              <div 
                 key={i} 
@@ -624,7 +624,7 @@ export const HistogramSim: React.FC = () => {
              />
            ))}
         </div>
-        <div className="absolute top-4 right-4 w-48 h-32 flex items-center justify-center pointer-events-none">
+        <div className="absolute top-4 right-4 w-32 h-24 md:w-48 md:h-32 flex items-center justify-center pointer-events-none">
              {exposure < 20 && <span className="text-xs text-blue-300 font-bold bg-black/50 px-1">Underexposed</span>}
              {exposure > 80 && <span className="text-xs text-red-300 font-bold bg-black/50 px-1">Overexposed</span>}
         </div>

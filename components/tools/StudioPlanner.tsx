@@ -46,6 +46,7 @@ const StudioPlanner: React.FC = () => {
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [savedSlots, setSavedSlots] = useState<{id: number, date: string}[]>([]);
     const containerRef = useRef<HTMLDivElement>(null);
+    const draggingIdRef = useRef<number | null>(null);
 
     // Load saves on mount
     useEffect(() => {
@@ -83,7 +84,6 @@ const StudioPlanner: React.FC = () => {
     };
 
     const updateItem = (id: number, changes: Partial<StudioItem>) => {
-        // Use functional update to avoid stale closures in event listeners
         setItems(prev => prev.map(i => i.id === id ? { ...i, ...changes } : i));
     };
 
@@ -107,45 +107,62 @@ const StudioPlanner: React.FC = () => {
         });
     };
 
-    const handleDragStart = (e: React.MouseEvent, id: number) => {
-        e.preventDefault();
+    const handleDragStart = (e: React.MouseEvent | React.TouchEvent, id: number) => {
+        // Stop bubbling so the container click doesn't deselect
         e.stopPropagation();
+        // Prevent default only on mouse to allow touch scrolling if needed elsewhere, 
+        // but here we likely want to prevent scroll while dragging
+        if (e.cancelable) e.preventDefault();
+        
         setSelectedId(id);
+        draggingIdRef.current = id;
+        
+        // Add global listeners for move/up
+        if ('touches' in e) {
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleDragEnd);
+        } else {
+            window.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleDragEnd);
+        }
+    };
+
+    const handleDragMove = (clientX: number, clientY: number) => {
+        const id = draggingIdRef.current;
+        if (id === null || !containerRef.current) return;
         
         const container = containerRef.current;
-        if (!container) return;
-        
-        const startX = e.clientX;
-        const startY = e.clientY;
-        const item = items.find(i => i.id === id);
-        if (!item) return;
-
-        const startItemX = item.x;
-        const startItemY = item.y;
-        
         const rect = container.getBoundingClientRect();
+        
+        // Calculate new position percentage
+        const x = ((clientX - rect.left) / rect.width) * 100;
+        const y = ((clientY - rect.top) / rect.height) * 100;
+        
+        // Constrain to container
+        const clampedX = Math.max(0, Math.min(100, x));
+        const clampedY = Math.max(0, Math.min(100, y));
 
-        const onMove = (moveEvent: MouseEvent) => {
-            moveEvent.preventDefault();
-            const dx = moveEvent.clientX - startX;
-            const dy = moveEvent.clientY - startY;
-            
-            const percentX = (dx / rect.width) * 100;
-            const percentY = (dy / rect.height) * 100;
-            
-            updateItem(id, { 
-                x: Math.min(100, Math.max(0, startItemX + percentX)),
-                y: Math.min(100, Math.max(0, startItemY + percentY))
-            });
-        };
+        updateItem(id, { x: clampedX, y: clampedY });
+    };
 
-        const onUp = () => {
-            window.removeEventListener('mousemove', onMove);
-            window.removeEventListener('mouseup', onUp);
-        };
+    const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+        handleDragMove(e.clientX, e.clientY);
+    };
 
-        window.addEventListener('mousemove', onMove);
-        window.addEventListener('mouseup', onUp);
+    const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        if (e.touches.length > 0) {
+            handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+    };
+
+    const handleDragEnd = () => {
+        draggingIdRef.current = null;
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleDragEnd);
     };
 
     const saveSetup = (slot: number) => {
@@ -229,12 +246,12 @@ const StudioPlanner: React.FC = () => {
 
             <div className="flex flex-col lg:flex-row gap-6">
                 
-                {/* LEFT TOOLBAR */}
-                <div className="lg:w-48 flex flex-col gap-6">
+                {/* LEFT TOOLBAR (Top on mobile) */}
+                <div className="lg:w-48 flex flex-col gap-6 order-2 lg:order-1">
                     <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 space-y-6">
                         <div>
                             <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Lighting</h4>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
                                 <button onClick={() => addItem('softbox')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
                                     <Maximize2 size={18} /> Softbox
                                 </button>
@@ -252,7 +269,7 @@ const StudioPlanner: React.FC = () => {
 
                         <div>
                             <h4 className="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Props</h4>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-4 lg:grid-cols-2 gap-2">
                                 <button onClick={() => addItem('subject')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
                                     <Users size={18} /> Subject
                                 </button>
@@ -260,7 +277,7 @@ const StudioPlanner: React.FC = () => {
                                     <Camera size={18} /> Camera
                                 </button>
                                 <button onClick={() => addItem('background')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
-                                    <ScanLine size={18} className="rotate-90"/> Backdrop
+                                    <ScanLine size={18} className="rotate-90"/> Back
                                 </button>
                                 <button onClick={() => addItem('vflat')} className="p-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg flex flex-col items-center gap-1 text-[10px] text-zinc-300 transition-colors">
                                     <Square size={18} /> V-Flat
@@ -279,13 +296,17 @@ const StudioPlanner: React.FC = () => {
 
                 {/* CENTER: Canvas */}
                 <div 
-                    className="flex-1 aspect-[4/3] max-h-[60vh] bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-2xl relative overflow-hidden group shadow-[inset_0_0_40px_rgba(0,0,0,0.5)]"
+                    className="flex-1 aspect-square lg:aspect-[4/3] max-h-[60vh] bg-zinc-950 border-2 border-dashed border-zinc-800 rounded-2xl relative overflow-hidden group shadow-[inset_0_0_40px_rgba(0,0,0,0.5)] order-1 lg:order-2 touch-none"
                     ref={containerRef}
                     onMouseDown={(e) => {
-                        // Use onMouseDown for deselection to match the drag start event timing
-                        if (e.target === e.currentTarget) {
-                            setSelectedId(null);
-                        }
+                         if (e.target === e.currentTarget) {
+                             setSelectedId(null);
+                         }
+                    }}
+                    onTouchStart={(e) => {
+                         if (e.target === e.currentTarget) {
+                             setSelectedId(null);
+                         }
                     }}
                 >
                      {/* Background Grid */}
@@ -297,6 +318,7 @@ const StudioPlanner: React.FC = () => {
                          <div
                             key={item.id}
                             onMouseDown={(e) => handleDragStart(e, item.id)}
+                            onTouchStart={(e) => handleDragStart(e, item.id)}
                             className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-move transition-opacity hover:opacity-90 ${selectedId && selectedId !== item.id ? 'opacity-70 grayscale-[0.5]' : 'opacity-100'}`}
                             style={{ 
                                 left: `${item.x}%`, 
@@ -323,8 +345,8 @@ const StudioPlanner: React.FC = () => {
                      ))}
                 </div>
 
-                {/* RIGHT SIDEBAR: Properties */}
-                <div className="lg:w-72 flex flex-col gap-6">
+                {/* RIGHT SIDEBAR: Properties (Bottom on mobile) */}
+                <div className="lg:w-72 flex flex-col gap-6 order-3">
                     
                     <div className={`bg-zinc-900 p-5 rounded-2xl border transition-all duration-300 ${selectedId ? 'border-blue-500/30 ring-1 ring-blue-500/20' : 'border-zinc-800'}`}>
                         {selectedItem ? (
@@ -447,7 +469,7 @@ const StudioPlanner: React.FC = () => {
 
                             </div>
                         ) : (
-                            <div className="h-64 flex flex-col items-center justify-center text-zinc-600 text-sm gap-3">
+                            <div className="h-40 lg:h-64 flex flex-col items-center justify-center text-zinc-600 text-sm gap-3">
                                 <div className="p-4 bg-zinc-800/50 rounded-full">
                                     <RotateCcw size={24} className="opacity-40" />
                                 </div>

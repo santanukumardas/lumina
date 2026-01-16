@@ -22,7 +22,7 @@ import {
   Camera, Frame, Sun, Image as ImageIcon, Mountain, Users, Building, 
   Moon, ChevronLeft, ChevronRight, BookOpen, Info, ArrowRight, Play, 
   ScanLine, Sliders, Eye, Aperture, Maximize2, Palette, PenTool, 
-  Calculator, Timer, Target, Sparkles, Activity, Layers, Grid, GraduationCap 
+  Calculator, Timer, Target, Sparkles, Activity, Layers, Grid, GraduationCap, Monitor 
 } from 'lucide-react';
 
 const IconMap = {
@@ -81,16 +81,22 @@ const MainView: React.FC<MainViewProps> = (props) => {
         case 'home':
             return (
                 <div className="animate-slide-up">
-                    <div className="mb-12 text-center space-y-4">
+                    <div className="mb-8 md:mb-12 text-center space-y-4 pt-4">
                         <h2 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
                             Master the Art.
                         </h2>
-                        <p className="text-zinc-400 max-w-md mx-auto">
+                        <p className="text-zinc-400 max-w-md mx-auto text-sm md:text-base">
                             Interactive visualizations, curated galleries, and AI-powered analysis.
                         </p>
+                        
+                        {/* Subtle Mobile Only Note */}
+                        <div className="md:hidden flex items-center justify-center gap-2 mt-6 opacity-60">
+                            <Monitor size={12} className="text-zinc-500" />
+                            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-medium">Desktop Recommended</span>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-12">
                         {LEARNING_MODULES.map((cat) => {
                             const Icon = IconMap[cat.iconName];
                             return (
@@ -107,16 +113,16 @@ const MainView: React.FC<MainViewProps> = (props) => {
                                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-50 mix-blend-multiply transition-opacity`} />
                                     <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
-                                    <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
-                                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                            <Icon size={24} className="text-white" />
+                                    <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
+                                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                            <Icon size={20} className="text-white md:w-6 md:h-6" />
                                         </div>
-                                        <h3 className="text-2xl font-bold mb-2 text-white">{cat.title}</h3>
-                                        <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
+                                        <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">{cat.title}</h3>
+                                        <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
                                             {cat.subtitle}
                                         </p>
 
-                                        <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                                        <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                             {cat.lessons.length} Modules <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                         </div>
                                     </div>
@@ -139,15 +145,15 @@ const MainView: React.FC<MainViewProps> = (props) => {
                             <div className={`absolute inset-0 bg-gradient-to-br from-indigo-600 to-slate-900 opacity-50 mix-blend-multiply transition-opacity`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
-                            <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
-                                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                    <GraduationCap size={24} className="text-white" />
+                            <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                    <GraduationCap size={20} className="text-white md:w-6 md:h-6" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2 text-white">Concepts & Techniques</h3>
-                                <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
+                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">Concepts & Techniques</h3>
+                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
                                     AI-Powered Explanations
                                 </p>
-                                <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                     20+ Topics <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
@@ -167,15 +173,15 @@ const MainView: React.FC<MainViewProps> = (props) => {
                             <div className={`absolute inset-0 bg-gradient-to-br from-fuchsia-600 to-purple-900 opacity-50 mix-blend-multiply transition-opacity`} />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
 
-                            <div className="absolute bottom-0 left-0 p-8 w-full relative z-10">
-                                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
-                                    <ImageIcon size={24} className="text-white" />
+                            <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full relative z-10">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center mb-4 md:mb-6 group-hover:-translate-y-2 transition-transform duration-300 border border-white/10 shadow-lg">
+                                    <ImageIcon size={20} className="text-white md:w-6 md:h-6" />
                                 </div>
-                                <h3 className="text-2xl font-bold mb-2 text-white">The Gallery</h3>
-                                <p className="text-zinc-300 text-sm group-hover:text-white transition-colors">
+                                <h3 className="text-xl md:text-2xl font-bold mb-2 text-white">The Gallery</h3>
+                                <p className="text-zinc-300 text-xs md:text-sm group-hover:text-white transition-colors">
                                     Curated Examples & Analysis
                                 </p>
-                                <div className="mt-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
+                                <div className="mt-4 md:mt-6 flex items-center gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-wider text-zinc-400 group-hover:text-white transition-colors">
                                     4 Collections <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                                 </div>
                             </div>
@@ -381,15 +387,16 @@ const MainView: React.FC<MainViewProps> = (props) => {
 
                     {/* Scrollable Tiles Container */}
                     <div className="relative group">
-                        <button onClick={() => onScroll('left')} className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/50 backdrop-blur-md border border-zinc-700 rounded-full text-white opacity-100 shadow-xl hover:bg-zinc-800 hover:scale-110 transition-all"><ChevronLeft size={24} /></button>
-                        <button onClick={() => onScroll('right')} className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/50 backdrop-blur-md border border-zinc-700 rounded-full text-white opacity-100 shadow-xl hover:bg-zinc-800 hover:scale-110 transition-all"><ChevronRight size={24} /></button>
+                        {/* Hide scroll buttons on mobile/touch devices, show on md+ */}
+                        <button onClick={() => onScroll('left')} className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/50 backdrop-blur-md border border-zinc-700 rounded-full text-white opacity-100 shadow-xl hover:bg-zinc-800 hover:scale-110 transition-all"><ChevronLeft size={24} /></button>
+                        <button onClick={() => onScroll('right')} className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 z-20 p-2 bg-black/50 backdrop-blur-md border border-zinc-700 rounded-full text-white opacity-100 shadow-xl hover:bg-zinc-800 hover:scale-110 transition-all"><ChevronRight size={24} /></button>
 
                         <div ref={scrollContainerRef} className="flex overflow-x-auto gap-4 pb-8 pt-2 scrollbar-hide snap-x snap-mandatory px-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                             {activeCategory.lessons.map((lesson, index) => (
                                 <button
                                     key={lesson.id}
                                     onClick={() => onLessonSelect(lesson)}
-                                    className="flex-shrink-0 w-64 snap-start text-left group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl isolate"
+                                    className="flex-shrink-0 w-64 snap-center text-left group/card relative overflow-hidden rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl isolate"
                                     style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                                 >
                                     <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${activeCategory.gradient} opacity-0 group-hover/card:opacity-100 transition-opacity`}></div>
@@ -415,7 +422,7 @@ const MainView: React.FC<MainViewProps> = (props) => {
             return (
                 <div className="animate-zoom-in">
                     <div className="bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl relative">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
+                        <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm">
                             <button
                                 onClick={() => prevLesson && onLessonSelect(prevLesson)}
                                 disabled={!prevLesson}
@@ -438,15 +445,16 @@ const MainView: React.FC<MainViewProps> = (props) => {
                         </div>
 
                         <div className="p-4 md:p-8">
-                            <div className="flex flex-col md:flex-row gap-8 items-start">
-                                <div className="w-full md:w-2/3 bg-black rounded-2xl overflow-hidden shadow-inner border border-zinc-900">
+                            <div className="flex flex-col xl:flex-row gap-8 items-start">
+                                {/* Visualizer Container: Needs to be adaptable height on mobile */}
+                                <div className="w-full xl:w-2/3 bg-black rounded-2xl overflow-hidden shadow-inner border border-zinc-900">
                                     <Visualizer lessonId={activeLesson.id} globalImage={postProdImage} setGlobalImage={setPostProdImage} />
                                 </div>
-                                <div className="w-full md:w-1/3 space-y-6">
+                                <div className="w-full xl:w-1/3 space-y-6">
                                     <div>
                                         <div className="flex items-center gap-2 text-zinc-500 text-xs font-bold uppercase tracking-widest mb-2"><BookOpen size={14} /> Concept</div>
-                                        <h2 className="text-3xl font-bold text-white mb-2">{activeLesson.title}</h2>
-                                        <p className="text-lg text-zinc-300 font-light leading-relaxed">{activeLesson.longDescription}</p>
+                                        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">{activeLesson.title}</h2>
+                                        <p className="text-base md:text-lg text-zinc-300 font-light leading-relaxed">{activeLesson.longDescription}</p>
                                     </div>
                                     <div className="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800/50">
                                         <div className="flex items-center gap-2 text-zinc-400 text-xs font-bold uppercase tracking-widest mb-3"><Info size={14} /> Pro Tip</div>
